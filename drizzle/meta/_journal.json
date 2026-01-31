@@ -1,0 +1,97 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1764970262637,
+      "tag": "0000_red_genesis",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1765079464094,
+      "tag": "0001_sloppy_dark_beast",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1765159488183,
+      "tag": "0002_optimal_mojo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1765176960904,
+      "tag": "0003_ordinary_secret_warriors",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1765177634977,
+      "tag": "0004_sloppy_pixie",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1765180125668,
+      "tag": "0005_dazzling_psynapse",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1765187150816,
+      "tag": "0006_striped_elektra",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1765402211752,
+      "tag": "0007_wooden_black_tarantula",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1765403189370,
+      "tag": "0008_third_leo",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1765560912462,
+      "tag": "0009_fuzzy_mathemanic",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1765561996752,
+      "tag": "0010_curvy_warbound",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1765563152369,
+      "tag": "0011_fresh_magdalene",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1765835706650,
+      "tag": "0012_lyrical_maverick",
+      "breakpoints": true
+    }
+  ]
+}

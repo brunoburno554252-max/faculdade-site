@@ -1,0 +1,8 @@
+{
+  "query": "DELETE FROM posts;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2RZCv1J5EnP3xyE.root --database iWz8zCyHxL2a335Qn5KVi9 --execute DELETE FROM posts;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'iwz8zcyhxl2a335qn5kvi9.posts' doesn't exist"
+  ]
+}

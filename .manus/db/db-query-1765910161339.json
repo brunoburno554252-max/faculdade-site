@@ -1,0 +1,55 @@
+{
+  "query": "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE();",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2RZCv1J5EnP3xyE.root --database iWz8zCyHxL2a335Qn5KVi9 --execute SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE();",
+  "rows": [
+    {
+      "table_name": "__drizzle_migrations"
+    },
+    {
+      "table_name": "users"
+    },
+    {
+      "table_name": "admin_users"
+    },
+    {
+      "table_name": "blog_posts"
+    },
+    {
+      "table_name": "certifications"
+    },
+    {
+      "table_name": "course_curriculum"
+    },
+    {
+      "table_name": "courses"
+    },
+    {
+      "table_name": "hero_banners"
+    },
+    {
+      "table_name": "site_settings"
+    },
+    {
+      "table_name": "course_categories"
+    },
+    {
+      "table_name": "course_types"
+    },
+    {
+      "table_name": "partnership_requests"
+    },
+    {
+      "table_name": "ombudsman_messages"
+    },
+    {
+      "table_name": "testimonials"
+    },
+    {
+      "table_name": "pageviews"
+    }
+  ],
+  "messages": [],
+  "stdout": "table_name\n__drizzle_migrations\nusers\nadmin_users\nblog_posts\ncertifications\ncourse_curriculum\ncourses\nhero_banners\nsite_settings\ncourse_categories\ncourse_types\npartnership_requests\nombudsman_messages\ntestimonials\npageviews\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

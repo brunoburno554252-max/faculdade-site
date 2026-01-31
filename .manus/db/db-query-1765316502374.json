@@ -1,0 +1,28 @@
+{
+  "query": "SELECT * FROM course_categories WHERE name IN ('Técnico', 'EJA')",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2RZCv1J5EnP3xyE.root --database iWz8zCyHxL2a335Qn5KVi9 --execute SELECT * FROM course_categories WHERE name IN ('Técnico', 'EJA')",
+  "rows": [
+    {
+      "id": "3",
+      "name": "Técnico",
+      "slug": "tecnico",
+      "description": "Cursos técnicos profissionalizantes",
+      "isActive": "1",
+      "createdAt": "2025-12-08 09:24:03",
+      "updatedAt": "2025-12-08 09:24:03"
+    },
+    {
+      "id": "30001",
+      "name": "EJA ",
+      "slug": "EJA",
+      "description": "A EJA (Educação de Jovens e Adultos) é uma modalidade de ensino destinada a pessoas que não concluíram os estudos na idade adequada. Ela permite finalizar o Ensino Fundamental e o Ensino Médio de forma mais rápida e flexível.",
+      "isActive": "1",
+      "createdAt": "2025-12-08 16:32:02",
+      "updatedAt": "2025-12-08 17:01:59"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tslug\tdescription\tisActive\tcreatedAt\tupdatedAt\n3\tTécnico\ttecnico\tCursos técnicos profissionalizantes\t1\t2025-12-08 09:24:03\t2025-12-08 09:24:03\n30001\tEJA \tEJA\tA EJA (Educação de Jovens e Adultos) é uma modalidade de ensino destinada a pessoas que não concluíram os estudos na idade adequada. Ela permite finalizar o Ensino Fundamental e o Ensino Médio de forma mais rápida e flexível.\t1\t2025-12-08 16:32:02\t2025-12-08 17:01:59\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

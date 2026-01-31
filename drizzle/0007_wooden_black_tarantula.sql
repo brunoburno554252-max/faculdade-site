@@ -1,0 +1,1 @@
+ALTER TABLE `blog_posts` ADD `featured` boolean DEFAULT false NOT NULL;

@@ -1,0 +1,55 @@
+{
+  "query": "SELECT id, title, image FROM blog_posts ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2RZCv1J5EnP3xyE.root --database iWz8zCyHxL2a335Qn5KVi9 --execute SELECT id, title, image FROM blog_posts ORDER BY id;",
+  "rows": [
+    {
+      "id": "60001",
+      "title": "Pós-graduação: o diferencial que pode dobrar o salário dos seus alunos",
+      "image": "/images/blog/post-01-pos-graduacao.webp"
+    },
+    {
+      "id": "60002",
+      "title": "Educação técnica em alta: Grupo LA é destaque no G1 em matéria sobre o futuro da Geração Z",
+      "image": "/images/blog/post-02-geracao-z.webp"
+    },
+    {
+      "id": "60003",
+      "title": "A revolução silenciosa da Certificação por Competência: quando a experiência vira diploma",
+      "image": "/images/blog/post-03-certificacao-competencia.webp"
+    },
+    {
+      "id": "60004",
+      "title": "Grupo LA Educação expande para o Sul e adquire escola técnica tradicional em Caxias do Sul (RS)",
+      "image": "/images/blog/post-04-expansao-sul.webp"
+    },
+    {
+      "id": "60005",
+      "title": "Impacto social da educação técnica e comportamental: como transformar realidades com educação prática",
+      "image": "/images/blog/post-05-impacto-social.webp"
+    },
+    {
+      "id": "60006",
+      "title": "Grupo LA Educação no G1: uma história que inspira o Brasil",
+      "image": "/images/blog/post-06-grupo-la-g1.webp"
+    },
+    {
+      "id": "60007",
+      "title": "O Grupo LA Educação Conquista a Honra de Ser Reconhecido no LAQI 2025",
+      "image": "/images/blog/post-07-laqi-2025.webp"
+    },
+    {
+      "id": "60008",
+      "title": "Fredison Carneiro se destaca na 30ª CIAED e fortalece o protagonismo do Grupo LA Educação no cenário da Educação a Distância no Brasil",
+      "image": "/images/blog/post-08-ciaed-30.webp"
+    },
+    {
+      "id": "60009",
+      "title": "Grupo LA Educação é destaque em duas matérias no Grupo Globo: nossa história inspira o Brasil",
+      "image": "/images/blog/post-09-destaque-globo.webp"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\timage\n60001\tPós-graduação: o diferencial que pode dobrar o salário dos seus alunos\t/images/blog/post-01-pos-graduacao.webp\n60002\tEducação técnica em alta: Grupo LA é destaque no G1 em matéria sobre o futuro da Geração Z\t/images/blog/post-02-geracao-z.webp\n60003\tA revolução silenciosa da Certificação por Competência: quando a experiência vira diploma\t/images/blog/post-03-certificacao-competencia.webp\n60004\tGrupo LA Educação expande para o Sul e adquire escola técnica tradicional em Caxias do Sul (RS)\t/images/blog/post-04-expansao-sul.webp\n60005\tImpacto social da educação técnica e comportamental: como transformar realidades com educação prática\t/images/blog/post-05-impacto-social.webp\n60006\tGrupo LA Educação no G1: uma história que inspira o Brasil\t/images/blog/post-06-grupo-la-g1.webp\n60007\tO Grupo LA Educação Conquista a Honra de Ser Reconhecido no LAQI 2025\t/images/blog/post-07-laqi-2025.webp\n60008\tFredison Carneiro se destaca na 30ª CIAED e fortalece o protagonismo do Grupo LA Educação no cenário da Educação a Distância no Brasil\t/images/blog/post-08-ciaed-30.webp\n60009\tGrupo LA Educação é destaque em duas matérias no Grupo Globo: nossa história inspira o Brasil\t/images/blog/post-09-destaque-globo.webp\n",
+  "stderr": "",
+  "execution_time_ms": 88
+}
