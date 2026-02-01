@@ -43,8 +43,9 @@
 }
 
 :root {
-  --primary: oklch(0.48 0.22 320); /* LA Magenta #9d197d */
+  --primary: #da1069; /* Rosa Vibrante */
   --primary-foreground: oklch(0.98 0 0); /* White */
+  --gradient-button: linear-gradient(135deg, #8b5cf6 0%, #da1069 100%); /* Degradê Roxo → Rosa */
   --sidebar-primary: var(--color-blue-600);
   --sidebar-primary-foreground: var(--color-blue-50);
   --chart-1: var(--color-blue-300);
@@ -63,8 +64,8 @@
   --secondary-foreground: oklch(0.4 0.015 65);
   --muted: oklch(0.967 0.001 286.375);
   --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.65 0.25 330); /* Rosa Vibrante Complementar */
-  --accent-foreground: oklch(0.2 0 0); /* Black */
+  --accent: #da1069; /* Rosa Vibrante - mesma do primary para consistência */
+  --accent-foreground: oklch(0.98 0 0); /* White */
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.92 0.004 286.32);
@@ -184,5 +185,18 @@
 @layer base {
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
+  }
+  
+  /* Botões com degradê roxo → rosa */
+  .btn-gradient {
+    background: linear-gradient(135deg, #8b5cf6 0%, #da1069 100%);
+    color: white;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-gradient:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #c4105e 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(218, 16, 105, 0.3);
   }
 }
