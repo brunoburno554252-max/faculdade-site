@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import ToggleSwitch from "./ToggleSwitch";
-import cardsData from "@/data/organograma-cards-v2.json";
+import cardsData from "@/data/organograma-cards-v3.json";
 import instituicoesInfo from "@/data/instituicoes-info.json";
 
 interface CardInfo {
@@ -90,7 +90,7 @@ export default function InteractiveEcosystem() {
         />
 
         {/* Overlay com botões toggle switches */}
-        <div className="absolute inset-0 w-full h-full">
+        <div className="absolute inset-0 w-full h-full pointer-events-none">
           {Object.entries(cardsData).map(([cardId, card]) => {
             const percentages = getPercentages(card as CardInfo);
             const isActive = activeToggles[cardId] || false;
@@ -98,7 +98,7 @@ export default function InteractiveEcosystem() {
             return (
               <div
                 key={cardId}
-                className="absolute"
+                className="absolute pointer-events-auto"
                 style={{
                   left: `${percentages.left}%`,
                   top: `${percentages.top}%`,
@@ -117,7 +117,7 @@ export default function InteractiveEcosystem() {
                   />
                   
                   {/* Label ao passar o mouse */}
-                  <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-3 py-1 rounded text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10 shadow-lg">
+                  <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-3 py-1 rounded text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10 shadow-lg">
                     {(card as CardInfo).nome}
                   </div>
                 </div>
