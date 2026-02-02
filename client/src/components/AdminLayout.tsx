@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Quote,
   BarChart3,
+  Network,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -53,6 +54,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/admin-la-educacao/dashboard" },
     { icon: BarChart3, label: "Analytics", href: "/admin-la-educacao/analytics" },
+    { icon: Network, label: "Ecossistema", href: "/admin-la-educacao/ecossistema" },
     { icon: BookOpen, label: "Cursos", href: "/admin-la-educacao/cursos" },
     { icon: FolderTree, label: "Categorias", href: "/admin-la-educacao/categorias" },
     { icon: Tag, label: "Tipos", href: "/admin-la-educacao/tipos" },
