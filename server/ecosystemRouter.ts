@@ -7,7 +7,6 @@ import { join } from "path";
 const CARDS_FILE = join(process.cwd(), "client/src/data/organograma-cards-final.json");
 
 const cardCoordinateSchema = z.object({
-  cardId: z.string(),
   nome: z.string(),
   tipo: z.string(),
   categoria: z.string(),
