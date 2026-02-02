@@ -31,6 +31,7 @@ import { publicOmbudsmanRouter } from "./publicOmbudsmanRouter";
 import { uploadRouter } from "./uploadRouter";
 import { licenciadosProxyRouter } from "./licenciadosProxy";
 import { analyticsRouter } from "./analyticsRouter";
+import { ecosystemRouter } from "./ecosystemRouter";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -60,6 +61,7 @@ export const appRouter = router({
   licenciados: licenciadosProxyRouter,
   upload: uploadRouter,
   analytics: analyticsRouter,
+  ecosystem: ecosystemRouter,
 
   // Admin routers
   adminAuth: adminAuthRouter,
