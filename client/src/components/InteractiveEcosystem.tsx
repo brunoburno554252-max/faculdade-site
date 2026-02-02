@@ -108,6 +108,7 @@ export default function InteractiveEcosystem() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  transform: "scale(1.2)",
                 }}
               >
                 <ToggleSwitch
@@ -122,10 +123,10 @@ export default function InteractiveEcosystem() {
         </div>
       </div>
 
-      {/* Modal Horizontal com Fundo Semi-transparente */}
+      {/* Modal Horizontal com Fundo Transparente e Desfocado */}
       {isModalOpen && selectedCardData && selectedInstituicaoInfo && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-4 backdrop-blur-md"
           onClick={closeModal}
         >
           <div 
