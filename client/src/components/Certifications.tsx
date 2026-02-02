@@ -49,12 +49,12 @@ export default function Certifications() {
         {[...badges, ...badges].map((badge, index) => (
           <div 
             key={`${badge.id}-${index}`} 
-            className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer transform hover:scale-110"
+            className="flex-shrink-0 transition-all duration-500 cursor-pointer transform hover:scale-110"
           >
             <img 
               src={badge.image} 
               alt={badge.name} 
-              className="h-24 w-auto object-contain"
+              className="h-24 w-auto object-contain filter-none"
             />
           </div>
         ))}
