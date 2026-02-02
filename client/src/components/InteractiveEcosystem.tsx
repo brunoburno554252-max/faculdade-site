@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import cardsData from "@/data/organograma-cards.json";
+import cardsData from "@/data/organograma-cards-v2.json";
 import instituicoesInfo from "@/data/instituicoes-info.json";
 
 interface CardInfo {
@@ -86,7 +86,7 @@ export default function InteractiveEcosystem() {
               <button
                 key={cardId}
                 onClick={() => handleCardClick(cardId)}
-                className="absolute group transition-all duration-300 hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
+                className="absolute group transition-all duration-300 hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 cursor-pointer"
                 style={{
                   left: `${percentages.left}%`,
                   top: `${percentages.top}%`,
@@ -95,12 +95,12 @@ export default function InteractiveEcosystem() {
                 }}
                 title={`Clique para saber mais sobre ${(card as CardInfo).nome}`}
               >
-                {/* Hover indicator */}
-                <div className="absolute inset-0 bg-pink-500 opacity-0 group-hover:opacity-20 rounded-lg transition-opacity duration-300" />
+                {/* Hover indicator - Overlay suave */}
+                <div className="absolute inset-0 bg-pink-500 opacity-0 group-hover:opacity-15 rounded-lg transition-opacity duration-300" />
                 
                 {/* Label ao passar o mouse */}
-                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-pink-600 text-white px-3 py-1 rounded text-sm font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                  {(card as CardInfo).nome}
+                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-pink-600 text-white px-3 py-1 rounded text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10 shadow-lg">
+                  Clique aqui
                 </div>
               </button>
             );
@@ -108,133 +108,135 @@ export default function InteractiveEcosystem() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal Horizontal com Fundo Semi-transparente */}
       {isModalOpen && selectedCardData && selectedInstituicaoInfo && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-300">
-            {/* Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-pink-600 to-pink-700 text-white p-6 flex justify-between items-start">
-              <div>
-                <h2 className="text-3xl font-bold">{selectedInstituicaoInfo.nome}</h2>
-                <p className="text-pink-100 mt-1">{selectedInstituicaoInfo.tipo}</p>
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+          onClick={closeModal}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-y-auto animate-in fade-in zoom-in duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Layout Horizontal */}
+            <div className="flex flex-col lg:flex-row">
+              {/* Lado Esquerdo - Informações Principais */}
+              <div className="flex-1 bg-gradient-to-br from-pink-50 to-white p-8 border-b lg:border-b-0 lg:border-r border-pink-100">
+                <div className="space-y-4">
+                  {/* Header */}
+                  <div>
+                    <div className="inline-block bg-pink-600 text-white px-3 py-1 rounded-full text-xs font-bold mb-3">
+                      {selectedInstituicaoInfo.categoria}
+                    </div>
+                    <h2 className="text-4xl font-bold text-gray-900 mb-1">
+                      {selectedInstituicaoInfo.nome}
+                    </h2>
+                    <p className="text-lg text-pink-600 font-semibold">
+                      {selectedInstituicaoInfo.tipo}
+                    </p>
+                  </div>
+
+                  {/* Descrição */}
+                  <p className="text-gray-700 leading-relaxed text-base">
+                    {selectedInstituicaoInfo.descricao}
+                  </p>
+
+                  {/* Missão e Visão em Cards */}
+                  <div className="space-y-3 pt-2">
+                    <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                      <p className="text-xs text-blue-600 font-bold uppercase tracking-wide">Missão</p>
+                      <p className="text-sm text-blue-900 mt-1">
+                        {selectedInstituicaoInfo.missao}
+                      </p>
+                    </div>
+                    <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+                      <p className="text-xs text-purple-600 font-bold uppercase tracking-wide">Visão</p>
+                      <p className="text-sm text-purple-900 mt-1">
+                        {selectedInstituicaoInfo.visao}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              {/* Lado Direito - Detalhes e Valores */}
+              <div className="flex-1 p-8 space-y-6">
+                {/* Valores */}
+                {selectedInstituicaoInfo.valores && (
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">
+                      Valores Fundamentais
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedInstituicaoInfo.valores.map((valor, idx) => (
+                        <span
+                          key={idx}
+                          className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold"
+                        >
+                          {valor}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Cursos/Serviços/Programas */}
+                {(selectedInstituicaoInfo.cursos ||
+                  selectedInstituicaoInfo.servicos ||
+                  selectedInstituicaoInfo.programas ||
+                  selectedInstituicaoInfo.empresas) && (
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">
+                      {selectedInstituicaoInfo.cursos
+                        ? "Cursos Oferecidos"
+                        : selectedInstituicaoInfo.servicos
+                          ? "Serviços"
+                          : selectedInstituicaoInfo.programas
+                            ? "Programas"
+                            : "Empresas do Grupo"}
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(
+                        selectedInstituicaoInfo.cursos ||
+                        selectedInstituicaoInfo.servicos ||
+                        selectedInstituicaoInfo.programas ||
+                        selectedInstituicaoInfo.empresas ||
+                        []
+                      ).map((item, idx) => (
+                        <div key={idx} className="flex items-start text-sm text-gray-700">
+                          <span className="inline-block w-2 h-2 bg-pink-600 rounded-full mr-2 mt-1 flex-shrink-0"></span>
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Botões CTA */}
+                <div className="flex gap-3 pt-4 border-t border-gray-200">
+                  <button className="flex-1 bg-pink-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-pink-700 transition-colors text-sm">
+                    Conhecer Mais
+                  </button>
+                  {selectedInstituicaoInfo.website && (
+                    <a
+                      href={selectedInstituicaoInfo.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 border-2 border-pink-600 text-pink-600 py-2 px-4 rounded-lg font-semibold hover:bg-pink-50 transition-colors text-sm text-center"
+                    >
+                      Visitar Site
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Botão Fechar */}
               <button
                 onClick={closeModal}
-                className="text-white hover:bg-pink-800 p-2 rounded-full transition-colors"
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-full transition-colors"
               >
                 <X size={24} />
               </button>
-            </div>
-
-            {/* Content */}
-            <div className="p-6 space-y-6">
-              {/* Categoria e Descrição */}
-              <div>
-                <div className="inline-block bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-semibold mb-3">
-                  {selectedInstituicaoInfo.categoria}
-                </div>
-                <p className="text-gray-700 text-lg leading-relaxed">
-                  {selectedInstituicaoInfo.descricao}
-                </p>
-              </div>
-
-              {/* Missão e Visão */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-blue-900 mb-2">Missão</h4>
-                  <p className="text-blue-700 text-sm">
-                    {selectedInstituicaoInfo.missao}
-                  </p>
-                </div>
-                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-purple-900 mb-2">Visão</h4>
-                  <p className="text-purple-700 text-sm">
-                    {selectedInstituicaoInfo.visao}
-                  </p>
-                </div>
-              </div>
-
-              {/* Valores */}
-              {selectedInstituicaoInfo.valores && (
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-green-900 mb-3">Valores</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedInstituicaoInfo.valores.map((valor, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-green-200 text-green-800 px-3 py-1 rounded-full text-sm font-medium"
-                      >
-                        {valor}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Cursos/Serviços/Programas */}
-              {(selectedInstituicaoInfo.cursos ||
-                selectedInstituicaoInfo.servicos ||
-                selectedInstituicaoInfo.programas ||
-                selectedInstituicaoInfo.empresas) && (
-                <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                  <h4 className="font-semibold text-orange-900 mb-3">
-                    {selectedInstituicaoInfo.cursos
-                      ? "Cursos Oferecidos"
-                      : selectedInstituicaoInfo.servicos
-                        ? "Serviços"
-                        : selectedInstituicaoInfo.programas
-                          ? "Programas"
-                          : "Empresas do Grupo"}
-                  </h4>
-                  <ul className="grid grid-cols-2 gap-2">
-                    {(
-                      selectedInstituicaoInfo.cursos ||
-                      selectedInstituicaoInfo.servicos ||
-                      selectedInstituicaoInfo.programas ||
-                      selectedInstituicaoInfo.empresas ||
-                      []
-                    ).map((item, idx) => (
-                      <li key={idx} className="text-orange-700 text-sm flex items-center">
-                        <span className="inline-block w-2 h-2 bg-orange-600 rounded-full mr-2"></span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Posição na estrutura */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-xs text-blue-600 font-semibold uppercase">Posição</p>
-                  <p className="text-lg font-bold text-blue-900 capitalize mt-1">
-                    {selectedCardData.posicao}
-                  </p>
-                </div>
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <p className="text-xs text-purple-600 font-semibold uppercase">Tipo</p>
-                  <p className="text-lg font-bold text-purple-900 mt-1">
-                    {selectedCardData.tipo}
-                  </p>
-                </div>
-              </div>
-
-              {/* CTA Buttons */}
-              <div className="flex gap-3 pt-4">
-                <button className="flex-1 bg-pink-600 text-white py-2 rounded-lg font-semibold hover:bg-pink-700 transition-colors">
-                  Conhecer Mais
-                </button>
-                {selectedInstituicaoInfo.website && (
-                  <a
-                    href={selectedInstituicaoInfo.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 border-2 border-pink-600 text-pink-600 py-2 rounded-lg font-semibold hover:bg-pink-50 transition-colors text-center"
-                  >
-                    Visitar Site
-                  </a>
-                )}
-              </div>
             </div>
           </div>
         </div>
