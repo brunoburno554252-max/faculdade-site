@@ -272,3 +272,21 @@ export const pageviews = mysqlTable("pageviews", {
 
 export type Pageview = typeof pageviews.$inferSelect;
 export type InsertPageview = typeof pageviews.$inferInsert;
+
+/**
+ * Ecosystem toggle coordinates - store positions of toggle switches on the ecosystem image
+ */
+export const ecosystemToggleCoordinates = mysqlTable("ecosystem_toggle_coordinates", {
+  id: int("id").autoincrement().primaryKey(),
+  cardId: varchar("cardId", { length: 100 }).notNull().unique(), // faculdade_la, la_tec, etc
+  cardName: varchar("cardName", { length: 255 }).notNull(),
+  x: int("x").notNull(),
+  y: int("y").notNull(),
+  width: int("width").default(200).notNull(),
+  height: int("height").default(140).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type EcosystemToggleCoordinate = typeof ecosystemToggleCoordinates.$inferSelect;
+export type InsertEcosystemToggleCoordinate = typeof ecosystemToggleCoordinates.$inferInsert;
