@@ -4,116 +4,107 @@
     "tipo": "Faculdade",
     "categoria": "Instituições de Ensino",
     "posicao": "esquerda-topo",
-    "x": 360,
-    "y": 930,
+    "x": 471,
+    "y": 1459,
     "width": 200,
     "height": 140,
     "descricao": "Instituição de ensino superior reconhecida pelo MEC"
   },
-  
   "la_tec": {
     "nome": "LA Tec",
     "tipo": "ETEC",
     "categoria": "Instituições de Ensino",
     "posicao": "esquerda-meio",
-    "x": 360,
-    "y": 1380,
+    "x": 487,
+    "y": 2104,
     "width": 200,
     "height": 140,
     "descricao": "Escola técnica de educação profissional"
   },
-  
   "la_tec_sul": {
     "nome": "LA Tec Sul",
     "tipo": "ETEC",
     "categoria": "Instituições de Ensino",
     "posicao": "esquerda-meio",
-    "x": 360,
-    "y": 1830,
+    "x": 472,
+    "y": 2732,
     "width": 200,
     "height": 140,
     "descricao": "Unidade sul da LA Tec"
   },
-  
   "astor_tec": {
     "nome": "AstorTec",
     "tipo": "ETEC",
     "categoria": "Instituições de Ensino",
     "posicao": "esquerda-base",
-    "x": 360,
-    "y": 2280,
+    "x": 486,
+    "y": 3368,
     "width": 200,
     "height": 140,
     "descricao": "Centro de educação técnica"
   },
-  
   "la_bank": {
     "nome": "LA BANK",
     "tipo": "Serviço Financeiro",
     "categoria": "Tecnologia e Serviços",
     "posicao": "centro-topo",
-    "x": 3150,
-    "y": 730,
+    "x": 5195,
+    "y": 1125,
     "width": 200,
     "height": 140,
     "descricao": "Plataforma de serviços bancários"
   },
-  
   "mde": {
     "nome": "MDE",
     "tipo": "Plataforma Digital",
     "categoria": "Tecnologia e Serviços",
     "posicao": "centro-topo",
-    "x": 2250,
-    "y": 980,
+    "x": 3189,
+    "y": 1494,
     "width": 200,
     "height": 140,
     "descricao": "Plataforma de gestão educacional"
   },
-  
   "la_tecnologia": {
     "nome": "LA Tecnologia",
     "tipo": "Consultoria Tecnológica",
     "categoria": "Tecnologia e Serviços",
     "posicao": "centro-meio",
-    "x": 2700,
-    "y": 1380,
+    "x": 5167,
+    "y": 2244,
     "width": 200,
     "height": 140,
     "descricao": "Soluções tecnológicas para educação"
   },
-  
   "izul": {
     "nome": "iZuL Institute Social",
     "tipo": "ONG Social",
     "categoria": "Impacto Social",
     "posicao": "direita-topo",
-    "x": 6550,
-    "y": 980,
+    "x": 7826,
+    "y": 2038,
     "width": 200,
     "height": 140,
     "descricao": "Instituto de impacto social e desenvolvimento"
   },
-  
   "capacita_cidade": {
     "nome": "Capacita Cidade",
     "tipo": "Programa Social",
     "categoria": "Impacto Social",
     "posicao": "direita-meio",
-    "x": 6550,
-    "y": 1530,
+    "x": 6909,
+    "y": 3043,
     "width": 200,
     "height": 140,
     "descricao": "Programa de capacitação comunitária"
   },
-  
   "la_educacao": {
     "nome": "LA Educação",
     "tipo": "Holding",
     "categoria": "Centro",
     "posicao": "centro-abaixo",
-    "x": 3600,
-    "y": 2180,
+    "x": 4122,
+    "y": 3372,
     "width": 250,
     "height": 160,
     "descricao": "Grupo LA Educação - Ecossistema completo de educação"
