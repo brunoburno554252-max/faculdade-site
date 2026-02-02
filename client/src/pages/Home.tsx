@@ -20,11 +20,11 @@ export default function Home() {
       <main className="flex-grow">
         <Hero />
         <Certifications />
+        <TrustSeals />
+        <PressNews />
         <About />
         <StudentExperience />
         <Ecosystem />
-        <TrustSeals />
-        <PressNews />
         <CourseList />
         <TestimonialsSection />
         <FeaturedBlog />
