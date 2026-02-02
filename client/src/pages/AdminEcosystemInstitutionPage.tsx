@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRoute } from "wouter";
 import { toast } from "sonner";
-import { ArrowLeft, Upload, X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import instituicoesInfo from "@/data/instituicoes-info.json";
 
 interface InstituicaoInfo {
@@ -27,6 +27,7 @@ export default function AdminEcosystemInstitutionPage() {
   const [formData, setFormData] = useState<InstituicaoInfo | null>(null);
   const [newValor, setNewValor] = useState("");
   const [newItem, setNewItem] = useState("");
+  const [newImageUrl, setNewImageUrl] = useState("");
   const [itemType, setItemType] = useState<"cursos" | "servicos" | "programas" | "empresas">("cursos");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -89,30 +90,22 @@ export default function AdminEcosystemInstitutionPage() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || !formData) return;
-
-    const file = files[0];
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      const base64 = event.target?.result as string;
+  const handleAddImageUrl = () => {
+    if (newImageUrl.trim() && formData) {
       setFormData({
         ...formData,
-        fotos: [base64],
+        fotos: [newImageUrl],
       });
-      toast.success("Imagem adicionada!");
-    };
-
-    reader.readAsDataURL(file);
+      setNewImageUrl("");
+      toast.success("URL da imagem adicionada!");
+    }
   };
 
-  const handleRemoveImage = (index: number) => {
+  const handleRemoveImage = () => {
     if (formData) {
       setFormData({
         ...formData,
-        fotos: (formData.fotos || []).filter((_, i) => i !== index),
+        fotos: [],
       });
     }
   };
@@ -350,9 +343,9 @@ export default function AdminEcosystemInstitutionPage() {
             </div>
           </div>
 
-          {/* Imagem Principal */}
+          {/* Imagem - URL Simples */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">Imagem Principal (Estilo Instagram)</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Imagem Principal (URL)</h2>
             
             {formData.fotos && formData.fotos.length > 0 ? (
               <div className="relative group w-full max-w-sm mx-auto">
@@ -360,9 +353,12 @@ export default function AdminEcosystemInstitutionPage() {
                   src={formData.fotos[0]}
                   alt="Imagem Principal"
                   className="w-full h-96 object-cover rounded-lg"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='%23999'%3EImagem não encontrada%3C/text%3E%3C/svg%3E";
+                  }}
                 />
                 <button
-                  onClick={() => handleRemoveImage(0)}
+                  onClick={handleRemoveImage}
                   className="absolute top-4 right-4 bg-red-600 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition"
                 >
                   <X size={20} />
@@ -375,18 +371,25 @@ export default function AdminEcosystemInstitutionPage() {
               </div>
             )}
             
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <label className="cursor-pointer flex flex-col items-center gap-2">
-                <Upload size={32} className="text-gray-400" />
-                <span className="text-gray-600 font-semibold">Clique para adicionar imagem</span>
-                <span className="text-sm text-gray-500">Recomendado: Formato vertical (Instagram)</span>
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">Cole a URL da imagem:</label>
+              <div className="flex gap-2">
                 <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
+                  type="url"
+                  value={newImageUrl}
+                  onChange={(e) => setNewImageUrl(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleAddImageUrl()}
+                  placeholder="https://exemplo.com/imagem.jpg"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 />
-              </label>
+                <button
+                  onClick={handleAddImageUrl}
+                  className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
+                >
+                  Adicionar
+                </button>
+              </div>
+              <p className="text-xs text-gray-500">Exemplo: https://via.placeholder.com/400x600</p>
             </div>
           </div>
 
