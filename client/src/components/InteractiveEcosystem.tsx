@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import ToggleSwitch from "./ToggleSwitch";
 import cardsData from "@/data/organograma-cards-v2.json";
 import instituicoesInfo from "@/data/instituicoes-info.json";
 
@@ -34,6 +35,7 @@ interface InstituicaoInfo {
 export default function InteractiveEcosystem() {
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeToggles, setActiveToggles] = useState<Record<string, boolean>>({});
 
   const imageWidth = 8199;
   const imageHeight = 4576;
@@ -48,13 +50,23 @@ export default function InteractiveEcosystem() {
     };
   };
 
-  const handleCardClick = (cardId: string) => {
+  const handleToggleClick = (cardId: string) => {
     setSelectedCard(cardId);
     setIsModalOpen(true);
+    setActiveToggles((prev) => ({
+      ...prev,
+      [cardId]: true,
+    }));
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    if (selectedCard) {
+      setActiveToggles((prev) => ({
+        ...prev,
+        [selectedCard]: false,
+      }));
+    }
     setTimeout(() => setSelectedCard(null), 300);
   };
 
@@ -77,32 +89,39 @@ export default function InteractiveEcosystem() {
           loading="lazy"
         />
 
-        {/* Overlay com áreas clicáveis */}
+        {/* Overlay com botões toggle switches */}
         <div className="absolute inset-0 w-full h-full">
           {Object.entries(cardsData).map(([cardId, card]) => {
             const percentages = getPercentages(card as CardInfo);
+            const isActive = activeToggles[cardId] || false;
 
             return (
-              <button
+              <div
                 key={cardId}
-                onClick={() => handleCardClick(cardId)}
-                className="absolute group transition-all duration-300 hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 cursor-pointer"
+                className="absolute"
                 style={{
                   left: `${percentages.left}%`,
                   top: `${percentages.top}%`,
                   width: `${percentages.width}%`,
                   height: `${percentages.height}%`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
-                title={`Clique para saber mais sobre ${(card as CardInfo).nome}`}
               >
-                {/* Hover indicator - Overlay suave */}
-                <div className="absolute inset-0 bg-pink-500 opacity-0 group-hover:opacity-15 rounded-lg transition-opacity duration-300" />
-                
-                {/* Label ao passar o mouse */}
-                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-pink-600 text-white px-3 py-1 rounded text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10 shadow-lg">
-                  Clique aqui
+                <div className="relative group">
+                  <ToggleSwitch
+                    isActive={isActive}
+                    onClick={() => handleToggleClick(cardId)}
+                    title={`Clique para abrir ${(card as CardInfo).nome}`}
+                  />
+                  
+                  {/* Label ao passar o mouse */}
+                  <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-3 py-1 rounded text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10 shadow-lg">
+                    {(card as CardInfo).nome}
+                  </div>
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
@@ -111,7 +130,7 @@ export default function InteractiveEcosystem() {
       {/* Modal Horizontal com Fundo Semi-transparente */}
       {isModalOpen && selectedCardData && selectedInstituicaoInfo && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
           onClick={closeModal}
         >
           <div 
@@ -119,7 +138,7 @@ export default function InteractiveEcosystem() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Layout Horizontal */}
-            <div className="flex flex-col lg:flex-row">
+            <div className="flex flex-col lg:flex-row relative">
               {/* Lado Esquerdo - Informações Principais */}
               <div className="flex-1 bg-gradient-to-br from-pink-50 to-white p-8 border-b lg:border-b-0 lg:border-r border-pink-100">
                 <div className="space-y-4">
@@ -233,7 +252,7 @@ export default function InteractiveEcosystem() {
               {/* Botão Fechar */}
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-full transition-colors"
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-full transition-colors z-10"
               >
                 <X size={24} />
               </button>
