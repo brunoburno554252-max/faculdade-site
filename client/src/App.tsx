@@ -35,6 +35,7 @@ import AdminPartnersPage from "./pages/AdminPartnersPage";
 import AdminOmbudsmanPage from "./pages/AdminOmbudsmanPage";
 import AdminTestimonialsPage from "./pages/AdminTestimonialsPage";
 import AdminEcosystemPage from "./pages/AdminEcosystemPage";
+import AdminEcosystemEditorPage from "./pages/AdminEcosystemEditorPage";
 
 function Router() {
   // Rastreamento automático de analytics
@@ -79,6 +80,7 @@ function Router() {
       <Route path="/admin-la-educacao/ouvidoria" component={AdminOmbudsmanPage} />
       <Route path="/admin-la-educacao/depoimentos" component={AdminTestimonialsPage} />
       <Route path="/admin-la-educacao/ecossistema" component={AdminEcosystemPage} />
+      <Route path="/admin-la-educacao/ecossistema/editor" component={AdminEcosystemEditorPage} />
 
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
