@@ -349,41 +349,55 @@ export default function AdminEcosystemInstitutionPage() {
             </div>
           </div>
 
-          {/* Imagens */}
+          {/* Imagem Principal */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">Imagens</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Imagem Principal (Estilo Instagram)</h2>
+            
+            {formData.fotos && formData.fotos.length > 0 ? (
+              <div className="relative group w-full max-w-sm mx-auto">
+                <img
+                  src={formData.fotos[0]}
+                  alt="Imagem Principal"
+                  className="w-full h-96 object-cover rounded-lg"
+                />
+                <button
+                  onClick={() => handleRemoveImage(0)}
+                  className="absolute top-4 right-4 bg-red-600 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-gray-50">
+                <div className="text-6xl mb-4">📸</div>
+                <p className="text-gray-600 font-semibold">Nenhuma imagem adicionada</p>
+              </div>
+            )}
             
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <label className="cursor-pointer flex flex-col items-center gap-2">
                 <Upload size={32} className="text-gray-400" />
-                <span className="text-gray-600 font-semibold">Clique para adicionar imagens</span>
-                <span className="text-sm text-gray-500">ou arraste e solte</span>
+                <span className="text-gray-600 font-semibold">Clique para adicionar imagem</span>
+                <span className="text-sm text-gray-500">Recomendado: Formato vertical (Instagram)</span>
                 <input
                   type="file"
-                  multiple
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) {
+                      const file = e.target.files[0];
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        setFormData({
+                          ...formData,
+                          fotos: [event.target?.result as string],
+                        });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
                   className="hidden"
                 />
               </label>
-            </div>
-
-            <div className="grid grid-cols-4 gap-4">
-              {(formData.fotos || []).map((foto, idx) => (
-                <div key={idx} className="relative group">
-                  <img
-                    src={foto}
-                    alt={`Foto ${idx + 1}`}
-                    className="w-full h-40 object-cover rounded-lg"
-                  />
-                  <button
-                    onClick={() => handleRemoveImage(idx)}
-                    className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-              ))}
             </div>
           </div>
 
