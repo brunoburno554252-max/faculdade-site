@@ -1,42 +1,40 @@
-import { Award, Star, CheckCircle } from "lucide-react";
-
 export default function TrustSeals() {
   const seals = [
     {
       id: 1,
-      name: "Prêmio Nacional",
-      icon: "🏆",
-      description: "Reconhecimento nacional"
+      name: "Education Awards 2025",
+      image: "/images/seal-awards.png",
+      description: "Prêmio Nacional de Excelência"
     },
     {
       id: 2,
-      name: "Excelência em Educação",
-      icon: "⭐",
-      description: "Prêmio de excelência"
+      name: "Google 5 Estrelas",
+      image: "/images/seal-google.png",
+      description: "Certificação Google"
     },
     {
       id: 3,
-      name: "Google Partner",
-      icon: "🔍",
-      description: "Parceiro Google"
-    },
-    {
-      id: 4,
       name: "RA1000",
-      icon: "✓",
+      image: "/images/seal-ra1000.png",
       description: "Certificação RA1000"
     },
     {
+      id: 4,
+      name: "Education Awards 2025",
+      image: "/images/seal-awards.png",
+      description: "Prêmio Internacional"
+    },
+    {
       id: 5,
-      name: "Prêmio Internacional",
-      icon: "🌍",
-      description: "Reconhecimento internacional"
+      name: "Google 5 Estrelas",
+      image: "/images/seal-google.png",
+      description: "Excelência em Serviço"
     },
     {
       id: 6,
-      name: "Certificação Premium",
-      icon: "⭐",
-      description: "Certificação premium"
+      name: "RA1000",
+      image: "/images/seal-ra1000.png",
+      description: "Certificação Premium"
     }
   ];
 
@@ -56,8 +54,12 @@ export default function TrustSeals() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center justify-center">
           {seals.map((seal) => (
             <div key={seal.id} className="flex flex-col items-center justify-center group">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform duration-300 mb-4">
-                {seal.icon}
+              <div className="w-32 h-32 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 mb-4">
+                <img 
+                  src={seal.image} 
+                  alt={seal.name}
+                  className="max-w-full max-h-full object-contain drop-shadow-lg"
+                />
               </div>
               <h3 className="text-sm font-bold text-gray-900 text-center">{seal.name}</h3>
               <p className="text-xs text-gray-500 text-center mt-1">{seal.description}</p>
