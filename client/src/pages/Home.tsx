@@ -4,6 +4,8 @@ import CourseList from "@/components/CourseList";
 import About from "@/components/About";
 import StudentExperience from "@/components/StudentExperience";
 import Certifications from "@/components/Certifications";
+import TrustSeals from "@/components/TrustSeals";
+import PressNews from "@/components/PressNews";
 import Ecosystem from "@/components/Ecosystem";
 import FeaturedBlog from "@/components/FeaturedBlog";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -21,6 +23,8 @@ export default function Home() {
         <About />
         <StudentExperience />
         <Ecosystem />
+        <TrustSeals />
+        <PressNews />
         <CourseList />
         <TestimonialsSection />
         <FeaturedBlog />
