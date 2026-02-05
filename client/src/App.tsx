@@ -1,7 +1,7 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, Redirect } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { useAnalytics } from "./hooks/useAnalytics";
@@ -60,6 +60,9 @@ function Router() {
       <Route path="/seja-parceiro" component={PartnershipPage} />
 
       {/* Admin Routes */}
+      <Route path="/admin-la-educacao">
+        <Redirect to="/admin-la-educacao/login" />
+      </Route>
       <Route path="/admin-la-educacao/login" component={AdminLoginPage} />
       <Route path="/admin-la-educacao/dashboard" component={AdminDashboardPage} />
       <Route path="/admin-la-educacao/analytics" component={AdminAnalyticsPage} />
