@@ -6,6 +6,7 @@ import StudentExperience from "@/components/StudentExperience";
 import Certifications from "@/components/Certifications";
 
 import Ecosystem from "@/components/Ecosystem";
+import EcosystemMenu from "@/components/EcosystemMenu";
 import PressNews from "@/components/PressNews";
 import FeaturedBlog from "@/components/FeaturedBlog";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -22,7 +23,7 @@ export default function Home() {
         <PressNews />
         <About />
         <StudentExperience />
-        <Ecosystem />
+        <EcosystemMenu />
         <CourseList />
         <TestimonialsSection />
         <FeaturedBlog />
