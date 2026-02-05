@@ -83,6 +83,41 @@ async function startServer() {
     }
   });
   
+  // Endpoint para upload de imagens
+  app.post("/api/upload", express.json({ limit: "50mb" }), async (req, res) => {
+    try {
+      const fs = await import("fs");
+      const path = await import("path");
+      
+      const { base64, filename, contentType } = req.body;
+      if (!base64) {
+        return res.status(400).json({ success: false, error: "No base64 data provided" });
+      }
+
+      const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
+      
+      const uploadDir = path.join(process.cwd(), "dist/public/uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      
+      const timestamp = Date.now();
+      const safeFilename = `${timestamp}-${filename.replace(/[^a-z0-9.]/gi, "_").toLowerCase()}`;
+      const filePath = path.join(uploadDir, safeFilename);
+      
+      fs.writeFileSync(filePath, buffer);
+      
+      const url = `/uploads/${safeFilename}`;
+      console.log("[API] Imagem salva em:", filePath);
+      
+      res.json({ success: true, url });
+    } catch (error) {
+      console.error("[API] Erro no upload:", error);
+      res.status(500).json({ success: false, error: String(error) });
+    }
+  });
+
   // Endpoint para salvar instituições do ecossistema
   app.post("/api/ecosystem/save-institution", express.json(), async (req, res) => {
     try {
@@ -120,6 +155,10 @@ async function startServer() {
       createContext,
     })
   );
+  // Servir pasta de uploads
+  const path = await import("path");
+  app.use("/uploads", express.static(path.join(process.cwd(), "dist/public/uploads")));
+
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

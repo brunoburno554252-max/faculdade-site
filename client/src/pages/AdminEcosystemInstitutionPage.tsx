@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRoute } from "wouter";
 import { toast } from "sonner";
 import { ArrowLeft, X, Upload, Image as ImageIcon, Save } from "lucide-react";
@@ -24,6 +24,9 @@ export default function AdminEcosystemInstitutionPage() {
 
   const [formData, setFormData] = useState<InstituicaoInfo | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
 
   // Carregar dados da instituição
   useEffect(() => {
@@ -46,6 +49,53 @@ export default function AdminEcosystemInstitutionPage() {
         ...formData,
         [field]: value,
       });
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "fotos" | "banner") => {
+    const file = e.target.files?.[0];
+    if (!file || !formData) return;
+
+    setIsUploading(true);
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        const base64 = reader.result as string;
+        
+        // Usar a API de upload do servidor (via tRPC ou fetch direto)
+        // Como o tRPC pode ser complexo de configurar no momento, vamos usar um endpoint direto se existir
+        // ou simular o comportamento para este ambiente
+        
+        // Para este projeto, vamos tentar usar o trpc se disponível ou um mock
+        // Nota: O usuário quer que "abra uma pasta para mandar o upload"
+        
+        // Simulando o upload para o ambiente local (salvando na pasta public/uploads)
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            base64,
+            filename: file.name,
+            contentType: file.type
+          })
+        });
+
+        if (!response.ok) throw new Error("Erro no upload");
+        const result = await response.json();
+        
+        if (field === "fotos") {
+          handleInputChange("fotos", [result.url]);
+        } else {
+          handleInputChange("banner", result.url);
+        }
+        toast.success("Upload concluído!");
+      };
+    } catch (error) {
+      toast.error("Erro ao fazer upload");
+      console.error(error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -125,8 +175,23 @@ export default function AdminEcosystemInstitutionPage() {
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <ImageIcon size={20} className="text-pink-600" /> Logo da Empresa
               </h3>
-              <div className="aspect-square bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden relative group">
-                {formData.fotos && formData.fotos[0] ? (
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="aspect-square bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden relative group cursor-pointer"
+              >
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, "fotos")}
+                />
+                {isUploading ? (
+                  <div className="text-center p-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600 mx-auto mb-2"></div>
+                    <p className="text-xs text-gray-500">Enviando...</p>
+                  </div>
+                ) : formData.fotos && formData.fotos[0] ? (
                   <>
                     <img src={formData.fotos[0]} alt="Logo" className="w-full h-full object-contain p-4" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -154,8 +219,23 @@ export default function AdminEcosystemInstitutionPage() {
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <ImageIcon size={20} className="text-pink-600" /> Banner de Fundo
               </h3>
-              <div className="aspect-video bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden relative group">
-                {formData.banner ? (
+              <div 
+                onClick={() => bannerInputRef.current?.click()}
+                className="aspect-video bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden relative group cursor-pointer"
+              >
+                <input 
+                  type="file" 
+                  ref={bannerInputRef} 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, "banner")}
+                />
+                {isUploading ? (
+                  <div className="text-center p-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600 mx-auto mb-2"></div>
+                    <p className="text-xs text-gray-500">Enviando...</p>
+                  </div>
+                ) : formData.banner ? (
                   <>
                     <img src={formData.banner} alt="Banner" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
