@@ -28,7 +28,7 @@ function getDbConfig() {
 // Pool de conexões MySQL (criado sob demanda)
 let dbPool: mysql.Pool | null = null;
 
-async function getDbPool(): Promise<mysql.Pool> {
+export async function getDbPool(): Promise<mysql.Pool> {
   if (!dbPool) {
     const config = getDbConfig();
     console.log("[DB] Criando pool de conexões MySQL...");

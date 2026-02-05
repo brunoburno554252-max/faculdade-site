@@ -38,6 +38,7 @@ import AdminTestimonialsPage from "./pages/AdminTestimonialsPage";
 import AdminEcosystemPage from "./pages/AdminEcosystemPage";
 import AdminEcosystemEditorPage from "./pages/AdminEcosystemEditorPage";
 import AdminEcosystemInstitutionPage from "./pages/AdminEcosystemInstitutionPage";
+import AdminHomePage from "./pages/AdminHomePage";
 
 function Router() {
   // Rastreamento automático de analytics
@@ -65,6 +66,7 @@ function Router() {
       </Route>
       <Route path="/admin-la-educacao/login" component={AdminLoginPage} />
       <Route path="/admin-la-educacao/dashboard" component={AdminDashboardPage} />
+      <Route path="/admin-la-educacao/home" component={AdminHomePage} />
       <Route path="/admin-la-educacao/analytics" component={AdminAnalyticsPage} />
       <Route path="/admin-la-educacao/cursos" component={AdminCoursesPage} />
       <Route path="/admin-la-educacao/cursos/novo" component={AdminCourseFormPage} />
