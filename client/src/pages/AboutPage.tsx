@@ -10,8 +10,8 @@ export default function AboutPage() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative py-24 overflow-hidden">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#9d197d] via-[#c41e8a] to-[#9d197d]"></div>
+          {/* Background gradient - Changed to primary pink */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary via-[#c41e8a] to-primary"></div>
           <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
           
           <div className="container relative z-10">
@@ -42,8 +42,8 @@ export default function AboutPage() {
                 />
                 <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl p-4 shadow-xl">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-[#9d197d]/10 rounded-xl flex items-center justify-center">
-                      <Building2 className="w-6 h-6 text-[#9d197d]" />
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                      <Building2 className="w-6 h-6 text-primary" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Nossa Sede</p>
@@ -61,7 +61,7 @@ export default function AboutPage() {
           <div className="container">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Nossa <span className="text-[#9d197d]">História</span>
+                Nossa <span className="text-primary">História</span>
               </h2>
               <p className="text-gray-600 text-lg max-w-2xl mx-auto">
                 Uma trajetória de crescimento, inovação e compromisso com a educação brasileira
@@ -70,9 +70,9 @@ export default function AboutPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* 2020-2021 */}
-              <div className="relative bg-white rounded-3xl p-8 shadow-lg border-t-4 border-[#9d197d] hover:-translate-y-2 transition-all duration-300">
+              <div className="relative bg-white rounded-3xl p-8 shadow-lg border-t-4 border-primary hover:-translate-y-2 transition-all duration-300">
                 <div className="absolute -top-6 left-8">
-                  <div className="bg-[#9d197d] text-white px-4 py-2 rounded-full font-bold text-lg">
+                  <div className="bg-primary text-white px-4 py-2 rounded-full font-bold text-lg">
                     2020 - 2021
                   </div>
                 </div>
@@ -85,7 +85,7 @@ export default function AboutPage() {
                     que busca oferecer ensino acessível, de qualidade e com suporte humanizado.
                   </p>
                 </div>
-                <div className="mt-4 flex items-center gap-2 text-[#9d197d]">
+                <div className="mt-4 flex items-center gap-2 text-primary">
                   <Calendar className="w-5 h-5" />
                   <span className="text-sm font-medium">Início da jornada</span>
                 </div>
@@ -115,9 +115,9 @@ export default function AboutPage() {
               </div>
 
               {/* 2024 */}
-              <div className="relative bg-white rounded-3xl p-8 shadow-lg border-t-4 border-[#9d197d] hover:-translate-y-2 transition-all duration-300">
+              <div className="relative bg-white rounded-3xl p-8 shadow-lg border-t-4 border-primary hover:-translate-y-2 transition-all duration-300">
                 <div className="absolute -top-6 left-8">
-                  <div className="bg-[#9d197d] text-white px-4 py-2 rounded-full font-bold text-lg">
+                  <div className="bg-primary text-white px-4 py-2 rounded-full font-bold text-lg">
                     2024
                   </div>
                 </div>
@@ -131,7 +131,7 @@ export default function AboutPage() {
                     em oportunidades de crescimento.
                   </p>
                 </div>
-                <div className="mt-4 flex items-center gap-2 text-[#9d197d]">
+                <div className="mt-4 flex items-center gap-2 text-primary">
                   <Award className="w-5 h-5" />
                   <span className="text-sm font-medium">Consolidação</span>
                 </div>
@@ -157,7 +157,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Missão */}
               <div className="bg-gradient-to-br from-gray-50 to-white p-8 rounded-3xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-                <div className="w-16 h-16 bg-[#9d197d]/10 rounded-2xl flex items-center justify-center text-[#9d197d] mb-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
                   <Target size={36} />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Missão</h3>
@@ -181,7 +181,7 @@ export default function AboutPage() {
 
               {/* Valores */}
               <div className="bg-gradient-to-br from-gray-50 to-white p-8 rounded-3xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-                <div className="w-16 h-16 bg-[#9d197d]/10 rounded-2xl flex items-center justify-center text-[#9d197d] mb-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
                   <Heart size={36} />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Valores</h3>
@@ -195,7 +195,7 @@ export default function AboutPage() {
                     <span><strong>Caridade:</strong> Só queremos o que podemos compartilhar.</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <Sparkles size={18} className="text-purple-500 flex-shrink-0" /> 
+                    <Sparkles size={18} className="text-primary flex-shrink-0" /> 
                     <span><strong>Gratidão:</strong> Cultivar a gratidão em todas as situações.</span>
                   </li>
                   <li className="flex items-center gap-3">
@@ -214,105 +214,39 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                  Nossa <span className="text-[#9d197d]">Sede</span>
+                  Nossa <span className="text-primary">Sede</span>
                 </h2>
-                <div className="flex items-center gap-3 mb-6 text-gray-600">
-                  <MapPin className="w-6 h-6 text-[#9d197d]" />
-                  <span className="text-lg">Rua Moóca, 221 — Maringá, PR</span>
-                </div>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                  Esse endereço em Maringá guarda o nosso maior salto de fé. Há pouco tempo éramos apenas 
-                  dez sonhadores dividindo mesas apertadas e planos ambiciosos; hoje, cruzamos a porta de 
-                  uma sede de <strong>mais de 500 m²</strong> que pulsa energia criativa a cada passo.
+                <p className="text-gray-600 text-lg leading-relaxed mb-6">
+                  Localizada estrategicamente em Maringá - PR, nossa sede administrativa conta com uma 
+                  infraestrutura moderna de mais de 500m², preparada para oferecer o melhor suporte 
+                  aos nossos parceiros e alunos em todo o Brasil.
                 </p>
-                <p className="text-gray-700 leading-relaxed mb-6">
-                  Crescemos tanto que, mesmo neste espaço amplo, mal conseguimos acomodar todos que embarcaram 
-                  nessa jornada, e isso é a melhor medida do nosso sucesso. Olhamos esses corredores cheios e 
-                  sentimos apenas uma coisa: <strong>gratidão profunda por cada pessoa</strong> que nos trouxe 
-                  até aqui e por todas que ainda chegarão para preencher os próximos capítulos dessa história.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <div className="bg-white px-6 py-3 rounded-full shadow-md flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-[#9d197d]" />
-                    <span className="font-semibold">+500 m²</span>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                      <MapPin size={24} />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">Localização</p>
+                      <p className="text-gray-900 font-bold">Maringá, Paraná</p>
+                    </div>
                   </div>
-                  <div className="bg-white px-6 py-3 rounded-full shadow-md flex items-center gap-2">
-                    <Users className="w-5 h-5 text-[#9d197d]" />
-                    <span className="font-semibold">Equipe em crescimento</span>
+                  <div className="flex items-center gap-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                      <BadgeCheck size={24} />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">Certificação</p>
+                      <p className="text-gray-900 font-bold">Sede Administrativa Oficial</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="relative">
-                <div className="absolute -inset-4 bg-gradient-to-br from-[#9d197d]/20 to-[#c41e8a]/20 rounded-3xl blur-xl"></div>
-                <img 
-                  src="/sede_la_educacao.webp" 
-                  alt="Sede LA Educação - Maringá PR" 
-                  className="relative rounded-3xl shadow-2xl w-full h-[450px] object-cover"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <img src="/sede_la_educacao.webp" alt="Interior Sede" className="rounded-2xl shadow-md h-48 w-full object-cover" />
+                <img src="/sede_la_educacao.webp" alt="Equipe LA" className="rounded-2xl shadow-md h-48 w-full object-cover mt-8" />
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* Nossos Selos */}
-        <section className="py-20 bg-white">
-          <div className="container">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Nossos <span className="text-[#9d197d]">Selos</span>
-              </h2>
-              <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-                Somos reconhecidos por <strong>oito selos de excelência</strong> que traduzem nossa credibilidade 
-                e compromisso com a qualidade educacional.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {[
-                { name: "Selo RA 1.000", desc: "Atendimento impecável" },
-                { name: "Prêmio RA 2024", desc: "Indicado ao prêmio" },
-                { name: "The Education", desc: "Qualidade acadêmica" },
-                { name: "ESG", desc: "Responsabilidade socioambiental" },
-                { name: "Silver Total LAQI", desc: "Performance global" },
-                { name: "ABED", desc: "Referência em EAD" },
-                { name: "Verificado Meta", desc: "Autenticidade digital" },
-                { name: "MEC", desc: "Validade nacional" },
-              ].map((selo, index) => (
-                <div 
-                  key={index}
-                  className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl shadow-md border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center"
-                >
-                  <div className="w-14 h-14 bg-[#9d197d]/10 rounded-xl flex items-center justify-center text-[#9d197d] mx-auto mb-4">
-                    <BadgeCheck size={28} />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-1">{selo.name}</h4>
-                  <p className="text-sm text-gray-500">{selo.desc}</p>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-center text-gray-600 mt-12 max-w-3xl mx-auto leading-relaxed">
-              Cada selo é um compromisso vivo com a <strong>inovação</strong>, a <strong>ética</strong> e 
-              o <strong>sucesso</strong> de quem aprende conosco. Conquistamos o Selo RA 1.000 e fomos indicados 
-              ao Prêmio RA 2024, reflexo de um atendimento impecável; recebemos os selos The Education, ESG e 
-              Silver Total do LAQI, comprovando qualidade acadêmica, responsabilidade socioambiental e performance global.
-            </p>
-          </div>
-        </section>
-
-        {/* CTA Final */}
-        <section className="py-16 bg-gradient-to-r from-[#9d197d] to-[#c41e8a]">
-          <div className="container text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Junte-se a nós e descubra como propósito e rentabilidade podem caminhar lado a lado
-            </h2>
-            <a 
-              href="/seja-parceiro"
-              className="inline-flex items-center gap-2 bg-white text-[#9d197d] px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-colors shadow-xl"
-            >
-              Quero ser um Parceiro
-              <CheckCircle className="w-5 h-5" />
-            </a>
           </div>
         </section>
       </main>

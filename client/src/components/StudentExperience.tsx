@@ -36,7 +36,7 @@ export default function StudentExperience() {
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-br from-gray-50 to-purple-50/30 overflow-hidden relative">
+    <section className="py-24 bg-gradient-to-br from-gray-50 to-primary/5 overflow-hidden relative">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
@@ -98,7 +98,7 @@ export default function StudentExperience() {
               <div className="flex flex-col items-center text-center">
                 {/* Student Avatars */}
                 <div className="flex -space-x-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-white flex items-center justify-center overflow-hidden">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-white flex items-center justify-center overflow-hidden">
                     <Users className="text-white" size={18} />
                   </div>
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white flex items-center justify-center overflow-hidden">

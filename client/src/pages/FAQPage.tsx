@@ -62,7 +62,7 @@ export function FAQPage() {
       <Header />
       
       {/* Hero Section */}
-      <div className="bg-[#9d197d] text-white py-16 relative overflow-hidden">
+      <div className="bg-primary text-white py-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="inline-flex items-center justify-center p-3 bg-white/10 rounded-full mb-6 backdrop-blur-sm">
@@ -84,7 +84,7 @@ export function FAQPage() {
             <input 
               type="text" 
               placeholder="Digite sua dúvida aqui..." 
-              className="w-full pl-12 pr-4 py-4 rounded-xl border-none bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#9d197d]/20 transition-all outline-none text-gray-700 placeholder:text-gray-400"
+              className="w-full pl-12 pr-4 py-4 rounded-xl border-none bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all outline-none text-gray-700 placeholder:text-gray-400"
             />
           </div>
         </div>
@@ -93,7 +93,7 @@ export function FAQPage() {
           {faqs.map((section, sectionIndex) => (
             <div key={sectionIndex} className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: `${sectionIndex * 100}ms` }}>
               <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <span className="w-1.5 h-8 bg-[#9d197d] rounded-full"></span>
+                <span className="w-1.5 h-8 bg-primary rounded-full"></span>
                 {section.category}
               </h2>
               
@@ -107,7 +107,7 @@ export function FAQPage() {
                       key={qIndex}
                       className={cn(
                         "bg-white rounded-xl border transition-all duration-300 overflow-hidden",
-                        isOpen ? "border-[#9d197d] shadow-md" : "border-gray-100 hover:border-gray-200"
+                        isOpen ? "border-primary shadow-md" : "border-gray-100 hover:border-gray-200"
                       )}
                     >
                       <button
@@ -116,12 +116,12 @@ export function FAQPage() {
                       >
                         <span className={cn(
                           "font-bold text-lg transition-colors",
-                          isOpen ? "text-[#9d197d]" : "text-gray-700"
+                          isOpen ? "text-primary" : "text-gray-700"
                         )}>
                           {item.question}
                         </span>
                         {isOpen ? (
-                          <ChevronUp className="w-5 h-5 text-[#9d197d]" />
+                          <ChevronUp className="w-5 h-5 text-primary" />
                         ) : (
                           <ChevronDown className="w-5 h-5 text-gray-400" />
                         )}
@@ -145,14 +145,14 @@ export function FAQPage() {
           ))}
         </div>
 
-        <div className="mt-16 bg-[#9d197d]/5 rounded-2xl p-8 text-center border border-[#9d197d]/10">
+        <div className="mt-16 bg-primary/5 rounded-2xl p-8 text-center border border-primary/10">
           <h3 className="text-xl font-bold text-gray-900 mb-2">Ainda tem dúvidas?</h3>
           <p className="text-gray-600 mb-6">Nossa equipe de atendimento está pronta para te ajudar.</p>
           <a 
             href="https://wa.me/5544998455042" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-8 py-3 bg-[#9d197d] text-white font-bold rounded-xl hover:bg-[#8a156e] transition-colors shadow-lg shadow-[#9d197d]/20"
+            className="inline-flex items-center justify-center px-8 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
           >
             Falar no WhatsApp
           </a>
