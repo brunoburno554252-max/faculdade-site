@@ -64,13 +64,16 @@ export default function About() {
 
           {/* Content */}
           <div className="w-full lg:w-1/2 order-1 lg:order-2">
-            <span className="text-accent font-bold tracking-widest text-sm uppercase mb-3 block">Seja um Licenciado</span>
-            <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-gray-900 mb-6 leading-tight">
-              Converta propósito em <span className="text-primary">rentabilidade</span> real.
+            <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-gray-900 mb-6 leading-tight">
+              <span className="text-primary">Empresários Educacionais:</span> transformem propósito em rentabilidade real com o maior ecossistema de cursos do mundo
             </h2>
             
+            <p className="text-gray-700 text-lg mb-4 leading-relaxed font-semibold">
+              Ser parceiro da LA Educação é sair do jogo pequeno.
+            </p>
+
             <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-              Ao se tornar um parceiro da LA. Educação, você não apenas amplia o acesso à educação de qualidade, mas fortalece sua marca com autoridade no setor e aumenta sua receita a cada nova matrícula.
+              Enquanto o mercado paga 30%, aqui você constrói autoridade, domina seu negócio e pode lucrar até 1000% sobre cada matrícula.
             </p>
 
             <h3 className="text-2xl font-bold text-primary mb-6">
