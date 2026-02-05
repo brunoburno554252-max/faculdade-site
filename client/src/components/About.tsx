@@ -1,22 +1,32 @@
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, TrendingUp, DollarSign, Users } from "lucide-react";
+import { CheckCircle2, TrendingUp, DollarSign, Users, Package, Clock } from "lucide-react";
 
 export default function About() {
   const benefits = [
     {
       icon: <DollarSign className="text-white" size={24} />,
-      title: "Maior Repasse do Brasil",
-      desc: "Condições exclusivas para acelerar seu lucro."
+      title: "REPASSE",
+      desc: "Possibilitamos LUCROS de até 1000%."
+    },
+    {
+      icon: <Package className="text-white" size={24} />,
+      title: "CATÁLOGO",
+      desc: "Temos hoje o MAIOR catálogo para revenda de cursos do Brasil, com quase 4.000 opções de todas as modalidades."
+    },
+    {
+      icon: <Clock className="text-white" size={24} />,
+      title: "FLUXO DE CAIXA",
+      desc: "Parceiro recebe e repassa, aqui o parceiro não precisa aguardar mais de 30 dias para receber."
     },
     {
       icon: <TrendingUp className="text-white" size={24} />,
-      title: "Liberdade Total",
-      desc: "Você define a precificação na sua região."
+      title: "PRECIFICAÇÃO",
+      desc: "Parceiro tem total autonomia, para precificar, pois aqui ele é dono do seu próprio negócio."
     },
     {
       icon: <Users className="text-white" size={24} />,
-      title: "Consultoria Gratuita",
-      desc: "Apoio de especialistas em vendas e marketing."
+      title: "CONSULTORIA COMERCIAL/MARKETING",
+      desc: "Trabalhamos com gestores regionais, altamente capacitados para prestar consultoria gratuita aos parceiros."
     }
   ];
 
@@ -55,23 +65,28 @@ export default function About() {
           {/* Content */}
           <div className="w-full lg:w-1/2 order-1 lg:order-2">
             <span className="text-accent font-bold tracking-widest text-sm uppercase mb-3 block">Seja um Licenciado</span>
-            <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-gray-900 mb-8 leading-tight">
+            <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-gray-900 mb-6 leading-tight">
               Converta propósito em <span className="text-primary">rentabilidade</span> real.
             </h2>
             
-            <p className="text-gray-600 text-lg mb-10 leading-relaxed">
+            <p className="text-gray-600 text-lg mb-8 leading-relaxed">
               Ao se tornar um parceiro da LA. Educação, você não apenas amplia o acesso à educação de qualidade, mas fortalece sua marca com autoridade no setor e aumenta sua receita a cada nova matrícula.
             </p>
 
-            <div className="space-y-8 mb-12">
+            <h3 className="text-2xl font-bold text-primary mb-6">
+              Conheça agora os diferenciais de Ser LA:
+            </h3>
+
+            {/* Grid de 2 colunas para os diferenciais */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               {benefits.map((benefit, index) => (
-                <div key={index} className="flex items-start gap-5 group">
-                  <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform duration-300">
+                <div key={index} className="flex items-start gap-4 group">
+                  <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform duration-300">
                     {benefit.icon}
                   </div>
-                  <div>
-                    <h4 className="text-xl font-bold text-gray-900 mb-1">{benefit.title}</h4>
-                    <p className="text-gray-500">{benefit.desc}</p>
+                  <div className="flex-1">
+                    <h4 className="text-base font-bold text-gray-900 mb-1 leading-tight">{benefit.title}</h4>
+                    <p className="text-sm text-gray-600 leading-snug">{benefit.desc}</p>
                   </div>
                 </div>
               ))}
