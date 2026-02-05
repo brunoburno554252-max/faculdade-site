@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import instituicoesInfo from "@/data/instituicoes-info.json";
 
 // Mapeamento das chaves do JSON para os IDs usados no menu
 const menuMapping = [
@@ -14,7 +13,7 @@ const menuMapping = [
   { id: "aizu", key: "izul" },
 ];
 
-// Fallback para banners caso não estejam definidos no JSON
+// Fallback para banners caso não estejam definidos no banco
 const bannerFallbacks: Record<string, string> = {
   mde: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1600",
   faculdade_la: "https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80&w=1600",
@@ -40,10 +39,41 @@ const logoFallbacks: Record<string, string> = {
   izul: "/assets/logos-grupo/Aizul.png",
 };
 
+interface MenuItem {
+  id: string;
+  key: string;
+  name: string;
+  logo: string;
+  banner: string;
+  description: string;
+}
+
 export default function EcosystemMenu() {
-  // Processar os itens do menu a partir do JSON
-  const menuItems = menuMapping.map(item => {
-    const data = (instituicoesInfo as any)[item.key];
+  const [instituicoesInfo, setInstituicoesInfo] = useState<Record<string, any>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTabId, setActiveTabId] = useState(menuMapping[0].id);
+
+  // Carregar dados das instituições do banco de dados
+  useEffect(() => {
+    async function loadInstitutions() {
+      try {
+        const response = await fetch("/api/ecosystem/institutions");
+        if (response.ok) {
+          const data = await response.json();
+          setInstituicoesInfo(data);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar instituições:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadInstitutions();
+  }, []);
+
+  // Processar os itens do menu a partir dos dados do banco
+  const menuItems: MenuItem[] = menuMapping.map(item => {
+    const data = instituicoesInfo[item.key];
     return {
       id: item.id,
       key: item.key,
@@ -54,8 +84,6 @@ export default function EcosystemMenu() {
     };
   });
 
-  const [activeTabId, setActiveTabId] = useState(menuItems[0].id);
-  
   // Encontrar o item ativo atualizado
   const activeTab = menuItems.find(item => item.id === activeTabId) || menuItems[0];
 
@@ -92,6 +120,13 @@ export default function EcosystemMenu() {
                     className={`max-h-full w-auto object-contain transition-all duration-500 ${
                       activeTab.id === item.id ? "drop-shadow-md" : "drop-shadow-sm"
                     }`}
+                    onError={(e) => {
+                      // Fallback se a imagem não carregar
+                      const target = e.target as HTMLImageElement;
+                      if (logoFallbacks[item.key] && target.src !== logoFallbacks[item.key]) {
+                        target.src = logoFallbacks[item.key];
+                      }
+                    }}
                   />
                 </div>
                 <div className={`mt-2 h-1 w-full rounded-full transition-all duration-300 ${
@@ -111,6 +146,12 @@ export default function EcosystemMenu() {
             src={activeTab.banner} 
             alt="Background" 
             className="w-full h-full object-cover animate-in fade-in zoom-in duration-1000"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              if (bannerFallbacks[activeTab.key] && target.src !== bannerFallbacks[activeTab.key]) {
+                target.src = bannerFallbacks[activeTab.key];
+              }
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/95 backdrop-blur-[2px]"></div>
         </div>
@@ -124,6 +165,12 @@ export default function EcosystemMenu() {
                   src={activeTab.logo} 
                   alt={activeTab.name} 
                   className="h-28 md:h-40 object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    if (logoFallbacks[activeTab.key] && target.src !== logoFallbacks[activeTab.key]) {
+                      target.src = logoFallbacks[activeTab.key];
+                    }
+                  }}
                 />
               </div>
             </div>

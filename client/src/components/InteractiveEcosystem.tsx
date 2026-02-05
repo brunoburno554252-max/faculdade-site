@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import ToggleSwitch from "./ToggleSwitch";
 import cardsData from "@/data/organograma-cards-final.json";
-import instituicoesInfo from "@/data/instituicoes-info.json";
 
 interface CardInfo {
   nome: string;
@@ -22,9 +21,9 @@ interface InstituicaoInfo {
   tipo: string;
   categoria: string;
   descricao: string;
-  missao: string;
-  visao: string;
-  valores: string[];
+  missao?: string;
+  visao?: string;
+  valores?: string[];
   cursos?: string[];
   servicos?: string[];
   programas?: string[];
@@ -37,9 +36,26 @@ export default function InteractiveEcosystem() {
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeToggles, setActiveToggles] = useState<Record<string, boolean>>({});
+  const [instituicoesInfo, setInstituicoesInfo] = useState<Record<string, InstituicaoInfo>>({});
 
   const imageWidth = 8199;
   const imageHeight = 4576;
+
+  // Carregar dados das instituições do banco de dados
+  useEffect(() => {
+    async function loadInstitutions() {
+      try {
+        const response = await fetch("/api/ecosystem/institutions");
+        if (response.ok) {
+          const data = await response.json();
+          setInstituicoesInfo(data);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar instituições:", error);
+      }
+    }
+    loadInstitutions();
+  }, []);
 
   // Calcular percentuais para responsividade
   const getPercentages = (card: CardInfo) => {
@@ -76,7 +92,7 @@ export default function InteractiveEcosystem() {
     : null;
 
   const selectedInstituicaoInfo = selectedCard
-    ? (instituicoesInfo[selectedCard as keyof typeof instituicoesInfo] as InstituicaoInfo)
+    ? (instituicoesInfo[selectedCard] as InstituicaoInfo)
     : null;
 
   return (
@@ -124,7 +140,7 @@ export default function InteractiveEcosystem() {
       </div>
 
       {/* Modal Minimalista */}
-      {isModalOpen && selectedCardData && selectedInstituicaoInfo && (
+      {isModalOpen && selectedCardData && (
         <div 
           className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
           onClick={closeModal}
@@ -135,7 +151,7 @@ export default function InteractiveEcosystem() {
           >
             {/* Coluna Esquerda - Imagem Vertical */}
             <div className="w-96 bg-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
-              {selectedInstituicaoInfo.fotos && selectedInstituicaoInfo.fotos.length > 0 ? (
+              {selectedInstituicaoInfo?.fotos && selectedInstituicaoInfo.fotos.length > 0 ? (
                 <img
                   src={selectedInstituicaoInfo.fotos[0]}
                   alt={selectedInstituicaoInfo.nome}
@@ -163,40 +179,44 @@ export default function InteractiveEcosystem() {
                 {/* Header */}
                 <div>
                   <h2 className="text-4xl font-bold text-gray-900 mb-1">
-                    {selectedInstituicaoInfo.nome}
+                    {selectedInstituicaoInfo?.nome || selectedCardData.nome}
                   </h2>
                   <p className="text-sm text-gray-600">
-                    {selectedInstituicaoInfo.tipo}
+                    {selectedInstituicaoInfo?.tipo || selectedCardData.tipo}
                   </p>
                 </div>
 
                 {/* Descrição */}
                 <p className="text-gray-700 leading-relaxed text-base">
-                  {selectedInstituicaoInfo.descricao}
+                  {selectedInstituicaoInfo?.descricao || selectedCardData.descricao}
                 </p>
 
                 {/* Missão */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-2">
-                    Missão
-                  </h3>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {selectedInstituicaoInfo.missao}
-                  </p>
-                </div>
+                {selectedInstituicaoInfo?.missao && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-2">
+                      Missão
+                    </h3>
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      {selectedInstituicaoInfo.missao}
+                    </p>
+                  </div>
+                )}
 
                 {/* Visão */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-2">
-                    Visão
-                  </h3>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {selectedInstituicaoInfo.visao}
-                  </p>
-                </div>
+                {selectedInstituicaoInfo?.visao && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-2">
+                      Visão
+                    </h3>
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      {selectedInstituicaoInfo.visao}
+                    </p>
+                  </div>
+                )}
 
                 {/* Valores */}
-                {selectedInstituicaoInfo.valores && selectedInstituicaoInfo.valores.length > 0 && (
+                {selectedInstituicaoInfo?.valores && selectedInstituicaoInfo.valores.length > 0 && (
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-2">
                       Valores
@@ -208,26 +228,26 @@ export default function InteractiveEcosystem() {
                 )}
 
                 {/* Cursos/Serviços/Programas */}
-                {(selectedInstituicaoInfo.cursos?.length ||
-                  selectedInstituicaoInfo.servicos?.length ||
-                  selectedInstituicaoInfo.programas?.length ||
-                  selectedInstituicaoInfo.empresas?.length) && (
+                {(selectedInstituicaoInfo?.cursos?.length ||
+                  selectedInstituicaoInfo?.servicos?.length ||
+                  selectedInstituicaoInfo?.programas?.length ||
+                  selectedInstituicaoInfo?.empresas?.length) && (
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-2">
-                      {selectedInstituicaoInfo.cursos?.length
+                      {selectedInstituicaoInfo?.cursos?.length
                         ? "Cursos"
-                        : selectedInstituicaoInfo.servicos?.length
+                        : selectedInstituicaoInfo?.servicos?.length
                           ? "Serviços"
-                          : selectedInstituicaoInfo.programas?.length
+                          : selectedInstituicaoInfo?.programas?.length
                             ? "Programas"
                             : "Empresas"}
                     </h3>
                     <p className="text-gray-700 text-sm">
                       {(
-                        selectedInstituicaoInfo.cursos ||
-                        selectedInstituicaoInfo.servicos ||
-                        selectedInstituicaoInfo.programas ||
-                        selectedInstituicaoInfo.empresas ||
+                        selectedInstituicaoInfo?.cursos ||
+                        selectedInstituicaoInfo?.servicos ||
+                        selectedInstituicaoInfo?.programas ||
+                        selectedInstituicaoInfo?.empresas ||
                         []
                       ).join(" • ")}
                     </p>
@@ -237,9 +257,20 @@ export default function InteractiveEcosystem() {
 
               {/* Botão CTA - Sticky Footer */}
               <div className="pt-6 border-t border-gray-200 mt-6">
-                <button className="w-full bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 transition">
-                  Conhecer Mais
-                </button>
+                {selectedInstituicaoInfo?.website ? (
+                  <a 
+                    href={selectedInstituicaoInfo.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 transition text-center"
+                  >
+                    Conhecer Mais
+                  </a>
+                ) : (
+                  <button className="w-full bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 transition">
+                    Conhecer Mais
+                  </button>
+                )}
               </div>
             </div>
           </div>

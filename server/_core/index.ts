@@ -10,6 +10,33 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { adminSubdomainMiddleware } from "../adminSubdomainMiddleware";
+import mysql from "mysql2/promise";
+
+// Configuração do banco de dados MySQL - lida em RUNTIME
+function getDbConfig() {
+  return {
+    host: process.env.DATABASE_HOST || "localhost",
+    user: process.env.DATABASE_USER || "faculdade_user",
+    password: process.env.DATABASE_PASSWORD || "Faculdade2024!",
+    database: process.env.DATABASE_NAME || "faculdade_db",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+  };
+}
+
+// Pool de conexões MySQL (criado sob demanda)
+let dbPool: mysql.Pool | null = null;
+
+async function getDbPool(): Promise<mysql.Pool> {
+  if (!dbPool) {
+    const config = getDbConfig();
+    console.log("[DB] Criando pool de conexões MySQL...");
+    console.log("[DB] Host:", config.host, "User:", config.user, "Database:", config.database);
+    dbPool = mysql.createPool(config);
+  }
+  return dbPool;
+}
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -83,7 +110,9 @@ async function startServer() {
     }
   });
   
-  // Endpoint para upload de imagens
+  // ============================================================
+  // ENDPOINT DE UPLOAD - SALVA EM /var/www/uploads/ (PERMANENTE)
+  // ============================================================
   app.post("/api/upload", express.json({ limit: "50mb" }), async (req, res) => {
     try {
       const fs = await import("fs");
@@ -97,7 +126,8 @@ async function startServer() {
       const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
       const buffer = Buffer.from(base64Data, "base64");
       
-      const uploadDir = path.join(process.cwd(), "dist/public/uploads");
+      // IMPORTANTE: Salvar em /var/www/uploads/ (pasta permanente fora do projeto)
+      const uploadDir = "/var/www/uploads";
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
@@ -108,8 +138,10 @@ async function startServer() {
       
       fs.writeFileSync(filePath, buffer);
       
+      // URL servida pelo Nginx diretamente
       const url = `/uploads/${safeFilename}`;
-      console.log("[API] Imagem salva em:", filePath);
+      console.log("[API] Imagem salva PERMANENTEMENTE em:", filePath);
+      console.log("[API] URL pública:", url);
       
       res.json({ success: true, url });
     } catch (error) {
@@ -118,31 +150,95 @@ async function startServer() {
     }
   });
 
-  // Endpoint para salvar instituições do ecossistema
-  app.post("/api/ecosystem/save-institution", express.json(), async (req, res) => {
+  // ============================================================
+  // GET /api/ecosystem/institutions - BUSCAR DO MYSQL
+  // ============================================================
+  app.get("/api/ecosystem/institutions", async (req, res) => {
     try {
-      const fs = await import("fs");
-      const path = await import("path");
+      const pool = await getDbPool();
+      const [rows] = await pool.execute("SELECT * FROM ecosystem_institutions ORDER BY name");
       
-      const { institutionId, data } = req.body;
-      const filePath = path.join(process.cwd(), "client/src/data/instituicoes-info.json");
-      
-      // Ler arquivo atual
-      let allInstitutions = {};
-      if (fs.existsSync(filePath)) {
-        const content = fs.readFileSync(filePath, "utf-8");
-        allInstitutions = JSON.parse(content);
+      // Converter para formato esperado pelo frontend (objeto com id como chave)
+      const institutions: Record<string, any> = {};
+      for (const row of rows as any[]) {
+        institutions[row.id] = {
+          nome: row.name || "",
+          tipo: row.tipo || "",
+          categoria: row.categoria || "",
+          descricao: row.description || "",
+          fotos: row.logo_url ? [row.logo_url] : [],
+          banner: row.banner_url || "",
+          website: row.website || "",
+          missao: row.missao || "",
+          visao: row.visao || "",
+          valores: row.valores ? JSON.parse(row.valores) : []
+        };
       }
       
-      // Atualizar instituição
-      allInstitutions[institutionId] = data;
-      
-      console.log("[API] Salvando instituição:", institutionId);
-      fs.writeFileSync(filePath, JSON.stringify(allInstitutions, null, 2), "utf-8");
-      
-      res.json({ success: true, message: "Instituição salva com sucesso!" });
+      console.log("[API] Instituições carregadas do MySQL:", Object.keys(institutions).length);
+      res.json(institutions);
     } catch (error) {
-      console.error("[API] Erro ao salvar instituição:", error);
+      console.error("[API] Erro ao buscar instituições:", error);
+      res.status(500).json({ success: false, error: String(error) });
+    }
+  });
+
+  // ============================================================
+  // POST /api/ecosystem/save-institution - SALVAR NO MYSQL
+  // ============================================================
+  app.post("/api/ecosystem/save-institution", express.json(), async (req, res) => {
+    try {
+      const { institutionId, data } = req.body;
+      
+      if (!institutionId || !data) {
+        return res.status(400).json({ success: false, error: "institutionId e data são obrigatórios" });
+      }
+      
+      const pool = await getDbPool();
+      
+      // Extrair dados do formato do frontend
+      const name = data.nome || "";
+      const description = data.descricao || "";
+      const logo_url = data.fotos && data.fotos[0] ? data.fotos[0] : "";
+      const banner_url = data.banner || "";
+      const tipo = data.tipo || "";
+      const categoria = data.categoria || "";
+      const website = data.website || "";
+      const missao = data.missao || "";
+      const visao = data.visao || "";
+      const valores = data.valores ? JSON.stringify(data.valores) : "[]";
+      
+      // Verificar se a instituição já existe
+      const [existing] = await pool.execute(
+        "SELECT id FROM ecosystem_institutions WHERE id = ?",
+        [institutionId]
+      );
+      
+      if ((existing as any[]).length > 0) {
+        // UPDATE
+        await pool.execute(
+          `UPDATE ecosystem_institutions SET 
+            name = ?, description = ?, logo_url = ?, banner_url = ?,
+            tipo = ?, categoria = ?, website = ?, missao = ?, visao = ?, valores = ?,
+            updated_at = NOW()
+          WHERE id = ?`,
+          [name, description, logo_url, banner_url, tipo, categoria, website, missao, visao, valores, institutionId]
+        );
+        console.log("[API] Instituição ATUALIZADA no MySQL:", institutionId);
+      } else {
+        // INSERT
+        await pool.execute(
+          `INSERT INTO ecosystem_institutions 
+            (id, name, description, logo_url, banner_url, tipo, categoria, website, missao, visao, valores) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [institutionId, name, description, logo_url, banner_url, tipo, categoria, website, missao, visao, valores]
+        );
+        console.log("[API] Instituição INSERIDA no MySQL:", institutionId);
+      }
+      
+      res.json({ success: true, message: "Instituição salva com sucesso no banco de dados!" });
+    } catch (error) {
+      console.error("[API] Erro ao salvar instituição no MySQL:", error);
       res.status(500).json({ success: false, error: String(error) });
     }
   });
@@ -155,9 +251,10 @@ async function startServer() {
       createContext,
     })
   );
-  // Servir pasta de uploads
+
+  // Servir pasta de uploads (fallback - Nginx deve servir em produção)
   const path = await import("path");
-  app.use("/uploads", express.static(path.join(process.cwd(), "dist/public/uploads")));
+  app.use("/uploads", express.static("/var/www/uploads"));
 
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
@@ -175,6 +272,7 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    console.log(`[DB] Configuração: Host=${process.env.DATABASE_HOST}, User=${process.env.DATABASE_USER}, DB=${process.env.DATABASE_NAME}`);
   });
 }
 

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useRoute } from "wouter";
 import { toast } from "sonner";
 import { ArrowLeft, X, Upload, Image as ImageIcon, Save } from "lucide-react";
-import instituicoesInfo from "@/data/instituicoes-info.json";
 
 interface InstituicaoInfo {
   nome: string;
@@ -25,22 +24,63 @@ export default function AdminEcosystemInstitutionPage() {
   const [formData, setFormData] = useState<InstituicaoInfo | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
-  // Carregar dados da instituição
+  // Carregar dados da instituição DO BANCO DE DADOS via API
   useEffect(() => {
-    if (institutionId) {
-      const institution = instituicoesInfo[institutionId as keyof typeof instituicoesInfo] as InstituicaoInfo;
-      if (institution) {
+    async function loadInstitution() {
+      if (!institutionId) return;
+      
+      setIsLoading(true);
+      try {
+        const response = await fetch("/api/ecosystem/institutions");
+        if (!response.ok) {
+          throw new Error("Erro ao carregar instituições");
+        }
+        
+        const institutions = await response.json();
+        const institution = institutions[institutionId] as InstituicaoInfo;
+        
+        if (institution) {
+          setFormData({
+            ...institution,
+            // Garantir que campos novos existam
+            banner: institution.banner || "",
+            fotos: institution.fotos || [],
+          });
+        } else {
+          // Instituição não encontrada - criar nova
+          setFormData({
+            nome: institutionId.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
+            tipo: "",
+            categoria: "",
+            descricao: "",
+            fotos: [],
+            banner: "",
+            website: ""
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao carregar instituição:", error);
+        toast.error("Erro ao carregar dados da instituição");
+        // Fallback para dados vazios
         setFormData({
-          ...institution,
-          // Garantir que campos novos existam
-          banner: institution.banner || "",
-          fotos: institution.fotos || [],
+          nome: institutionId.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
+          tipo: "",
+          categoria: "",
+          descricao: "",
+          fotos: [],
+          banner: "",
+          website: ""
         });
+      } finally {
+        setIsLoading(false);
       }
     }
+    
+    loadInstitution();
   }, [institutionId]);
 
   const handleInputChange = (field: string, value: any) => {
@@ -63,14 +103,7 @@ export default function AdminEcosystemInstitutionPage() {
       reader.onload = async () => {
         const base64 = reader.result as string;
         
-        // Usar a API de upload do servidor (via tRPC ou fetch direto)
-        // Como o tRPC pode ser complexo de configurar no momento, vamos usar um endpoint direto se existir
-        // ou simular o comportamento para este ambiente
-        
-        // Para este projeto, vamos tentar usar o trpc se disponível ou um mock
-        // Nota: O usuário quer que "abra uma pasta para mandar o upload"
-        
-        // Simulando o upload para o ambiente local (salvando na pasta public/uploads)
+        // Upload para /var/www/uploads/ via API
         const response = await fetch("/api/upload", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -81,20 +114,29 @@ export default function AdminEcosystemInstitutionPage() {
           })
         });
 
-        if (!response.ok) throw new Error("Erro no upload");
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "Erro no upload");
+        }
+        
         const result = await response.json();
+        console.log("[Upload] Sucesso:", result.url);
         
         if (field === "fotos") {
           handleInputChange("fotos", [result.url]);
         } else {
           handleInputChange("banner", result.url);
         }
-        toast.success("Upload concluído!");
+        toast.success("Upload concluído! Imagem salva permanentemente.");
+        setIsUploading(false);
+      };
+      reader.onerror = () => {
+        toast.error("Erro ao ler arquivo");
+        setIsUploading(false);
       };
     } catch (error) {
       toast.error("Erro ao fazer upload");
       console.error(error);
-    } finally {
       setIsUploading(false);
     }
   };
@@ -104,6 +146,7 @@ export default function AdminEcosystemInstitutionPage() {
 
     setIsSaving(true);
     try {
+      // Salvar no banco de dados MySQL via API
       const response = await fetch("/api/ecosystem/save-institution", {
         method: "POST",
         headers: {
@@ -116,10 +159,11 @@ export default function AdminEcosystemInstitutionPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Erro ao salvar no servidor");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Erro ao salvar no servidor");
       }
 
-      toast.success("✓ Alterações salvas com sucesso!");
+      toast.success("✓ Alterações salvas com sucesso no banco de dados!");
       
       setTimeout(() => {
         window.location.href = "/admin-la-educacao/ecossistema";
@@ -132,10 +176,21 @@ export default function AdminEcosystemInstitutionPage() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+          <div className="text-pink-600 font-bold">Carregando dados do banco de dados...</div>
+        </div>
+      </div>
+    );
+  }
+
   if (!formData) {
     return (
       <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
-        <div className="text-pink-600 font-bold animate-pulse">Carregando dados da empresa...</div>
+        <div className="text-red-600 font-bold">Erro ao carregar dados da empresa</div>
       </div>
     );
   }
