@@ -1,72 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import instituicoesInfo from "@/data/instituicoes-info.json";
 
-const menuItems = [
-  { 
-    id: "mde", 
-    name: "MDE", 
-    logo: "/assets/logos-grupo/MDE - PNG.png",
-    banner: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1600",
-    description: "O MDE (Método de Desenvolvimento Educacional) é o nosso braço focado em metodologias inovadoras de ensino, garantindo que o aprendizado seja eficiente, moderno e focado em resultados reais para o aluno."
-  },
-  { 
-    id: "la-faculdades", 
-    name: "LA Faculdades", 
-    logo: "/assets/logos-grupo/Logo_LAFACULDADES_principal.png",
-    banner: "https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80&w=1600",
-    description: "A LA Faculdades oferece cursos de graduação e pós-graduação com excelência acadêmica, todos reconhecidos pelo MEC, preparando profissionais para os desafios do mercado de trabalho atual."
-  },
-  { 
-    id: "la-bank", 
-    name: "LA Bank", 
-    logo: "/assets/logos-grupo/Logo_LABank_Principal.png",
-    banner: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=1600",
-    description: "O LA Bank é a nossa solução financeira integrada, facilitando o acesso ao crédito estudantil e oferecendo serviços bancários pensados exclusivamente para o ecossistema educacional."
-  },
-  { 
-    id: "la-tecnologia", 
-    name: "LA Tecnologia", 
-    logo: "/assets/logos-grupo/LA TECNOLOGIA COLORIDO HORIZONTAL.png",
-    banner: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1600",
-    description: "Focada em soluções de ponta, a LA Tecnologia desenvolve as plataformas e ferramentas que sustentam todo o nosso ecossistema, garantindo estabilidade, segurança e inovação constante."
-  },
-  { 
-    id: "latec-sul", 
-    name: "LATEC SUL", 
-    logo: "/assets/logos-grupo/Logo_LATecSul_Principal.png",
-    banner: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=1600",
-    description: "O LATEC SUL é o nosso centro de tecnologia e inovação focado na região Sul do Brasil, adaptando nossas soluções às necessidades específicas do mercado regional."
-  },
-  { 
-    id: "latec", 
-    name: "LATEC", 
-    logo: "/assets/logos-grupo/Logo_LATec_Principal.png",
-    banner: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&q=80&w=1600",
-    description: "O LATEC é o nosso Laboratório de Tecnologia Educacional, onde pesquisamos e desenvolvemos novas formas de integrar tecnologia ao processo de ensino-aprendizagem."
-  },
-  { 
-    id: "astortc", 
-    name: "ASTORTC", 
-    logo: "/assets/logos-grupo/AstorTec_Oficial.png",
-    banner: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1600",
-    description: "A ASTORTC é especializada em treinamentos corporativos e técnicos de alta performance, ajudando empresas a capacitarem seus colaboradores com o que há de mais moderno no setor."
-  },
-  { 
-    id: "capacita", 
-    name: "CAPACITA", 
-    logo: "/assets/logos-grupo/Design sem nome.png",
-    banner: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&q=80&w=1600",
-    description: "O programa CAPACITA foca em cursos profissionalizantes de curta duração, permitindo uma rápida inserção ou reinserção no mercado de trabalho através de habilidades práticas."
-  },
-  { 
-    id: "aizu", 
-    name: "AIZU", 
-    logo: "/assets/logos-grupo/Aizul.png",
-    banner: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1600",
-    description: "O Instituto AIZU é o nosso pilar de impacto social e educação humanizada, focando no desenvolvimento integral do ser humano além das competências técnicas."
-  },
+// Mapeamento das chaves do JSON para os IDs usados no menu
+const menuMapping = [
+  { id: "mde", key: "mde" },
+  { id: "la-faculdades", key: "faculdade_la" },
+  { id: "la-bank", key: "la_bank" },
+  { id: "la-tecnologia", key: "la_tecnologia" },
+  { id: "latec-sul", key: "la_tec_sul" },
+  { id: "latec", key: "la_tec" },
+  { id: "astortc", key: "astor_tec" },
+  { id: "capacita", key: "capacita_cidade" },
+  { id: "aizu", key: "izul" },
 ];
 
+// Fallback para banners caso não estejam definidos no JSON
+const bannerFallbacks: Record<string, string> = {
+  mde: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1600",
+  faculdade_la: "https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80&w=1600",
+  la_bank: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=1600",
+  la_tecnologia: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1600",
+  la_tec_sul: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=1600",
+  la_tec: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&q=80&w=1600",
+  astor_tec: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1600",
+  capacita_cidade: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&q=80&w=1600",
+  izul: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1600",
+};
+
+// Fallback para logos (caminhos locais)
+const logoFallbacks: Record<string, string> = {
+  mde: "/assets/logos-grupo/MDE - PNG.png",
+  faculdade_la: "/assets/logos-grupo/Logo_LAFACULDADES_principal.png",
+  la_bank: "/assets/logos-grupo/Logo_LABank_Principal.png",
+  la_tecnologia: "/assets/logos-grupo/LA TECNOLOGIA COLORIDO HORIZONTAL.png",
+  la_tec_sul: "/assets/logos-grupo/Logo_LATecSul_Principal.png",
+  la_tec: "/assets/logos-grupo/Logo_LATec_Principal.png",
+  astor_tec: "/assets/logos-grupo/AstorTec_Oficial.png",
+  capacita_cidade: "/assets/logos-grupo/Design sem nome.png",
+  izul: "/assets/logos-grupo/Aizul.png",
+};
+
 export default function EcosystemMenu() {
+  // Processar os itens do menu a partir do JSON
+  const menuItems = menuMapping.map(item => {
+    const data = (instituicoesInfo as any)[item.key];
+    return {
+      id: item.id,
+      key: item.key,
+      name: data?.nome || item.id.toUpperCase(),
+      logo: data?.fotos?.[0] || logoFallbacks[item.key],
+      banner: data?.banner || bannerFallbacks[item.key],
+      description: data?.descricao || "Descrição em breve."
+    };
+  });
+
   const [activeTab, setActiveTab] = useState(menuItems[0]);
 
   return (
@@ -122,7 +109,6 @@ export default function EcosystemMenu() {
             alt="Background" 
             className="w-full h-full object-cover animate-in fade-in zoom-in duration-1000"
           />
-          {/* Overlay mais escuro para dar contraste com o texto branco/claro se necessário, ou mantendo o estilo anterior */}
           <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/95 backdrop-blur-[2px]"></div>
         </div>
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRoute } from "wouter";
 import { toast } from "sonner";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft, X, Upload, Image as ImageIcon, Save } from "lucide-react";
 import instituicoesInfo from "@/data/instituicoes-info.json";
 
 interface InstituicaoInfo {
@@ -9,15 +9,13 @@ interface InstituicaoInfo {
   tipo: string;
   categoria: string;
   descricao: string;
-  missao: string;
-  visao: string;
-  valores: string[];
-  cursos?: string[];
-  servicos?: string[];
-  programas?: string[];
-  empresas?: string[];
-  fotos?: string[];
+  missao?: string;
+  visao?: string;
+  valores?: string[];
+  fotos?: string[]; // Usado para o Logo
+  banner?: string; // Novo campo para o Banner
   website?: string;
+  [key: string]: any;
 }
 
 export default function AdminEcosystemInstitutionPage() {
@@ -25,10 +23,6 @@ export default function AdminEcosystemInstitutionPage() {
   const institutionId = params?.id as string;
 
   const [formData, setFormData] = useState<InstituicaoInfo | null>(null);
-  const [newValor, setNewValor] = useState("");
-  const [newItem, setNewItem] = useState("");
-  const [newImageUrl, setNewImageUrl] = useState("");
-  const [itemType, setItemType] = useState<"cursos" | "servicos" | "programas" | "empresas">("cursos");
   const [isSaving, setIsSaving] = useState(false);
 
   // Carregar dados da instituição
@@ -36,7 +30,12 @@ export default function AdminEcosystemInstitutionPage() {
     if (institutionId) {
       const institution = instituicoesInfo[institutionId as keyof typeof instituicoesInfo] as InstituicaoInfo;
       if (institution) {
-        setFormData(institution);
+        setFormData({
+          ...institution,
+          // Garantir que campos novos existam
+          banner: institution.banner || "",
+          fotos: institution.fotos || [],
+        });
       }
     }
   }, [institutionId]);
@@ -50,72 +49,11 @@ export default function AdminEcosystemInstitutionPage() {
     }
   };
 
-  const handleAddValor = () => {
-    if (newValor.trim() && formData) {
-      setFormData({
-        ...formData,
-        valores: [...formData.valores, newValor],
-      });
-      setNewValor("");
-    }
-  };
-
-  const handleRemoveValor = (index: number) => {
-    if (formData) {
-      setFormData({
-        ...formData,
-        valores: formData.valores.filter((_, i) => i !== index),
-      });
-    }
-  };
-
-  const handleAddItem = () => {
-    if (newItem.trim() && formData) {
-      const items = formData[itemType] || [];
-      setFormData({
-        ...formData,
-        [itemType]: [...items, newItem],
-      });
-      setNewItem("");
-    }
-  };
-
-  const handleRemoveItem = (type: string, index: number) => {
-    if (formData) {
-      const items = formData[type as keyof InstituicaoInfo] as string[];
-      setFormData({
-        ...formData,
-        [type]: items.filter((_, i) => i !== index),
-      });
-    }
-  };
-
-  const handleAddImageUrl = () => {
-    if (newImageUrl.trim() && formData) {
-      setFormData({
-        ...formData,
-        fotos: [newImageUrl],
-      });
-      setNewImageUrl("");
-      toast.success("URL da imagem adicionada!");
-    }
-  };
-
-  const handleRemoveImage = () => {
-    if (formData) {
-      setFormData({
-        ...formData,
-        fotos: [],
-      });
-    }
-  };
-
   const handleSave = async () => {
     if (!formData || !institutionId) return;
 
     setIsSaving(true);
     try {
-      // Chamar endpoint para salvar no servidor
       const response = await fetch("/api/ecosystem/save-institution", {
         method: "POST",
         headers: {
@@ -131,14 +69,13 @@ export default function AdminEcosystemInstitutionPage() {
         throw new Error("Erro ao salvar no servidor");
       }
 
-      toast.success("✓ Instituição salva com sucesso!");
+      toast.success("✓ Alterações salvas com sucesso!");
       
-      // Recarregar a página após 1 segundo
       setTimeout(() => {
         window.location.href = "/admin-la-educacao/ecossistema";
       }, 1000);
     } catch (error) {
-      toast.error("Erro ao salvar instituição");
+      toast.error("Erro ao salvar alterações");
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -147,267 +84,162 @@ export default function AdminEcosystemInstitutionPage() {
 
   if (!formData) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="text-center">Carregando...</div>
+      <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
+        <div className="text-pink-600 font-bold animate-pulse">Carregando dados da empresa...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <a
-            href="/admin-la-educacao/ecossistema"
-            className="flex items-center gap-2 text-pink-600 hover:text-pink-700 font-semibold"
-          >
-            <ArrowLeft size={20} />
-            Voltar
-          </a>
-          <h1 className="text-4xl font-bold text-gray-900">Editar: {formData.nome}</h1>
-        </div>
-
-        {/* Formulário */}
-        <div className="bg-white rounded-lg shadow-lg p-8 space-y-8">
-          {/* Informações Básicas */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">Informações Básicas</h2>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Nome</label>
-                <input
-                  type="text"
-                  value={formData.nome}
-                  onChange={(e) => handleInputChange("nome", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Tipo</label>
-                <input
-                  type="text"
-                  value={formData.tipo}
-                  onChange={(e) => handleInputChange("tipo", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Categoria</label>
-                <input
-                  type="text"
-                  value={formData.categoria}
-                  onChange={(e) => handleInputChange("categoria", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Website</label>
-                <input
-                  type="url"
-                  value={formData.website || ""}
-                  onChange={(e) => handleInputChange("website", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Descrição</label>
-              <textarea
-                value={formData.descricao}
-                onChange={(e) => handleInputChange("descricao", e.target.value)}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Missão e Visão */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">Missão e Visão</h2>
-            
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Missão</label>
-              <textarea
-                value={formData.missao}
-                onChange={(e) => handleInputChange("missao", e.target.value)}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Visão</label>
-              <textarea
-                value={formData.visao}
-                onChange={(e) => handleInputChange("visao", e.target.value)}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* Valores */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">Valores Fundamentais</h2>
-            
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newValor}
-                onChange={(e) => setNewValor(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleAddValor()}
-                placeholder="Adicionar novo valor..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              />
-              <button
-                onClick={handleAddValor}
-                className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
-              >
-                Adicionar
-              </button>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {formData.valores.map((valor, idx) => (
-                <div key={idx} className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full">
-                  <span>{valor}</span>
-                  <button
-                    onClick={() => handleRemoveValor(idx)}
-                    className="hover:text-green-900"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Cursos/Serviços/Programas/Empresas */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">Cursos, Serviços, Programas e Empresas</h2>
-            
-            <div className="space-y-4">
-              {["cursos", "servicos", "programas", "empresas"].map((type) => (
-                <div key={type}>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 capitalize">
-                    {type}
-                  </label>
-                  <div className="space-y-2">
-                    {(formData[type as keyof InstituicaoInfo] as string[] || []).map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg">
-                        <span>{item}</span>
-                        <button
-                          onClick={() => handleRemoveItem(type, idx)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <X size={18} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-
-              <div className="flex gap-2">
-                <select
-                  value={itemType}
-                  onChange={(e) => setItemType(e.target.value as any)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                >
-                  <option value="cursos">Cursos</option>
-                  <option value="servicos">Serviços</option>
-                  <option value="programas">Programas</option>
-                  <option value="empresas">Empresas</option>
-                </select>
-                <input
-                  type="text"
-                  value={newItem}
-                  onChange={(e) => setNewItem(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleAddItem()}
-                  placeholder="Adicionar novo item..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                />
-                <button
-                  onClick={handleAddItem}
-                  className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
-                >
-                  Adicionar
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Imagem - URL Simples */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">Imagem Principal (URL)</h2>
-            
-            {formData.fotos && formData.fotos.length > 0 ? (
-              <div className="relative group w-full max-w-sm mx-auto">
-                <img
-                  src={formData.fotos[0]}
-                  alt="Imagem Principal"
-                  className="w-full h-96 object-cover rounded-lg"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='%23999'%3EImagem não encontrada%3C/text%3E%3C/svg%3E";
-                  }}
-                />
-                <button
-                  onClick={handleRemoveImage}
-                  className="absolute top-4 right-4 bg-red-600 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-gray-50">
-                <div className="text-6xl mb-4">📸</div>
-                <p className="text-gray-600 font-semibold">Nenhuma imagem adicionada</p>
-              </div>
-            )}
-            
-            <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">Cole a URL da imagem:</label>
-              <div className="flex gap-2">
-                <input
-                  type="url"
-                  value={newImageUrl}
-                  onChange={(e) => setNewImageUrl(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleAddImageUrl()}
-                  placeholder="https://exemplo.com/imagem.jpg"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                />
-                <button
-                  onClick={handleAddImageUrl}
-                  className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
-                >
-                  Adicionar
-                </button>
-              </div>
-              <p className="text-xs text-gray-500">Exemplo: https://via.placeholder.com/400x600</p>
-            </div>
-          </div>
-
-          {/* Botões de Ação */}
-          <div className="flex gap-4 pt-8 border-t border-gray-200">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
             <a
               href="/admin-la-educacao/ecossistema"
-              className="flex-1 bg-gray-300 text-gray-800 py-3 px-6 rounded-lg font-bold hover:bg-gray-400 transition text-center"
+              className="p-2 bg-white rounded-full shadow-sm text-pink-600 hover:bg-pink-50 transition-colors"
             >
-              Cancelar
+              <ArrowLeft size={24} />
             </a>
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="flex-1 bg-pink-600 text-white py-3 px-6 rounded-lg font-bold hover:bg-pink-700 disabled:bg-pink-400 transition"
-            >
-              {isSaving ? "⏳ Salvando..." : "💾 Salvar Alterações"}
-            </button>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{formData.nome}</h1>
+              <p className="text-gray-500">Gerenciar conteúdo e identidade visual</p>
+            </div>
+          </div>
+          
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center justify-center gap-2 bg-pink-600 text-white py-3 px-8 rounded-xl hover:bg-pink-700 transition shadow-lg shadow-pink-200 font-bold disabled:opacity-50"
+          >
+            {isSaving ? "Salvando..." : <><Save size={20} /> Salvar Alterações</>}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Coluna da Esquerda: Imagens */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Logo da Empresa */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <ImageIcon size={20} className="text-pink-600" /> Logo da Empresa
+              </h3>
+              <div className="aspect-square bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden relative group">
+                {formData.fotos && formData.fotos[0] ? (
+                  <>
+                    <img src={formData.fotos[0]} alt="Logo" className="w-full h-full object-contain p-4" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button className="text-white font-bold text-sm">Trocar Logo</button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center p-4">
+                    <Upload className="mx-auto text-gray-400 mb-2" size={32} />
+                    <p className="text-xs text-gray-500">Clique para fazer upload do logo (PNG/JPG)</p>
+                  </div>
+                )}
+              </div>
+              <input 
+                type="text" 
+                placeholder="URL da Imagem do Logo"
+                value={formData.fotos?.[0] || ""}
+                onChange={(e) => handleInputChange("fotos", [e.target.value])}
+                className="mt-4 w-full px-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-500 outline-none"
+              />
+            </div>
+
+            {/* Banner de Fundo */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <ImageIcon size={20} className="text-pink-600" /> Banner de Fundo
+              </h3>
+              <div className="aspect-video bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden relative group">
+                {formData.banner ? (
+                  <>
+                    <img src={formData.banner} alt="Banner" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button className="text-white font-bold text-sm">Trocar Banner</button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center p-4">
+                    <Upload className="mx-auto text-gray-400 mb-2" size={32} />
+                    <p className="text-xs text-gray-500">Upload do banner de fundo</p>
+                  </div>
+                )}
+              </div>
+              <input 
+                type="text" 
+                placeholder="URL da Imagem do Banner"
+                value={formData.banner || ""}
+                onChange={(e) => handleInputChange("banner", e.target.value)}
+                className="mt-4 w-full px-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-500 outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Coluna da Direita: Textos */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Conteúdo da Seção</h3>
+              
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Nome da Empresa</label>
+                  <input
+                    type="text"
+                    value={formData.nome}
+                    onChange={(e) => handleInputChange("nome", e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Tipo de Negócio</label>
+                    <input
+                      type="text"
+                      value={formData.tipo}
+                      onChange={(e) => handleInputChange("tipo", e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Categoria</label>
+                    <input
+                      type="text"
+                      value={formData.categoria}
+                      onChange={(e) => handleInputChange("categoria", e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Descrição Detalhada</label>
+                  <textarea
+                    value={formData.descricao}
+                    onChange={(e) => handleInputChange("descricao", e.target.value)}
+                    rows={6}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all resize-none"
+                    placeholder="Escreva aqui o texto que aparecerá quando o aluno clicar na logo desta empresa..."
+                  />
+                  <p className="mt-2 text-xs text-gray-400">Este texto será exibido na seção de conteúdo dinâmico do site.</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Link do Website (Opcional)</label>
+                  <input
+                    type="url"
+                    value={formData.website || ""}
+                    onChange={(e) => handleInputChange("website", e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all"
+                    placeholder="https://..."
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
