@@ -18,7 +18,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="text-white">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                  Sobre a <span className="text-yellow-300">LA Educação</span>
+                  Sobre a <span>LA Educação</span>
                 </h1>
                 <p className="text-xl text-white/90 leading-relaxed">
                   E se cada matrícula fosse uma semente de futuro, e também o motor do seu crescimento? 
