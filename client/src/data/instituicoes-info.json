@@ -3,7 +3,7 @@
     "nome": "Faculdade LA",
     "tipo": "Faculdade",
     "categoria": "Instituições de Ensino",
-    "descricao": "Instituição de ensino superior reconhecida pelo MEC",
+    "descricao": "Instituição de ensino superior reconhecida pelo MECweqwq sfZVxcv GSADG DFSDGHA SGASDG",
     "missao": "Formar profissionais qualificados e comprometidos com a excelência acadêmica e responsabilidade social",
     "visao": "Ser referência em educação superior inovadora e inclusiva",
     "valores": [
@@ -22,7 +22,8 @@
       "/faculdade-la-1.jpg",
       "/faculdade-la-2.jpg"
     ],
-    "website": "https://faculdade-la.edu.br"
+    "website": "https://faculdade-la.edu.br",
+    "banner": ""
   },
   "la_tec": {
     "nome": "LA Tec",
@@ -125,10 +126,14 @@
     "website": "https://labank.com.br"
   },
   "mde": {
-    "nome": "MDE Teste",
-    "tipo": "Plataforma",
-    "categoria": "Tecnologia",
-    "descricao": "Teste de salvamento"
+    "nome": "MDE - Método de Desenvolvimento",
+    "tipo": "Plataforma Digital",
+    "categoria": "Tecnologia e Serviços",
+    "descricao": "Teste de funcionamento de imagens",
+    "fotos": [
+      "https://placehold.co/400x400/pink/white?text=LOGO+TESTE"
+    ],
+    "banner": "https://placehold.co/1600x900/pink/white?text=BANNER+TESTE"
   },
   "la_tecnologia": {
     "nome": "LA Tecnologia",

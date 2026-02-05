@@ -54,7 +54,10 @@ export default function EcosystemMenu() {
     };
   });
 
-  const [activeTab, setActiveTab] = useState(menuItems[0]);
+  const [activeTabId, setActiveTabId] = useState(menuItems[0].id);
+  
+  // Encontrar o item ativo atualizado
+  const activeTab = menuItems.find(item => item.id === activeTabId) || menuItems[0];
 
   return (
     <section id="ecossistema" className="w-full bg-white overflow-hidden">
@@ -77,7 +80,7 @@ export default function EcosystemMenu() {
             {menuItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item)}
+                onClick={() => setActiveTabId(item.id)}
                 className={`group flex flex-col items-center transition-all duration-300 hover:scale-110 flex-shrink-0 outline-none ${
                   activeTab.id === item.id ? "scale-110" : "opacity-70 hover:opacity-100"
                 }`}
