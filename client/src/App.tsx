@@ -10,6 +10,7 @@ import AboutPage from "./pages/AboutPage";
 import CoursesPage from "./pages/CoursesPage";
 import PartnerPage from "./pages/PartnerPage";
 import ConsultPage from "./pages/ConsultPage";
+import CertificateTrackingPage from "./pages/CertificateTrackingPage";
 import OmbudsmanPage from "./pages/OmbudsmanPage";
 import BlogPage from "./pages/BlogPage";
 import { CourseDetailsPage } from "./pages/CourseDetailsPage";
@@ -51,6 +52,7 @@ function Router() {
       <Route path="/cursos/:slug" component={CourseDetailsPage} />
       <Route path="/parceiro" component={PartnerPage} />
       <Route path="/consulta" component={ConsultPage} />
+      <Route path="/rastreio-certificado" component={CertificateTrackingPage} />
       <Route path="/ouvidoria" component={OmbudsmanPage} />
       <Route path="/blog" component={BlogPage} />
       <Route path="/blog/:slug" component={BlogPostPage} />

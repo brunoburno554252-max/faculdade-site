@@ -20,6 +20,7 @@ export default function Header() {
     { name: "Blog", href: "/blog", hasDropdown: false },
     { name: "Seja um Parceiro", href: "/parceiro", hasDropdown: false },
     { name: "Ouvidoria", href: "/ouvidoria", hasDropdown: false },
+    { name: "Rastreio", href: "/rastreio-certificado", hasDropdown: false },
     { name: "FAQ", href: "/faq", hasDropdown: false },
   ];
 
