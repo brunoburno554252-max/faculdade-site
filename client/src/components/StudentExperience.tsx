@@ -1,7 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { Monitor, Smartphone, Video, BookOpen, Award, Users } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 export default function StudentExperience() {
+  // Buscar configurações da seção Student Experience do banco
+  const { data: studentSettings = [] } = trpc.home.getHomeSection.useQuery({ section: "student_experience" });
+
+  // Função auxiliar para pegar valor de um campo
+  const getFieldValue = (field: string, defaultValue: string = "") => {
+    const item = (studentSettings as any[]).find((s: any) => s.field === field);
+    return item?.value || defaultValue;
+  };
+
+  // Valores padrão (fallback)
+  const label = getFieldValue("label", "EXPERIÊNCIA DO ALUNO");
+  const title = getFieldValue("title", "Plataforma intuitiva e repleta de recursos");
+  const description = getFieldValue("description", "Seus alunos terão acesso a uma plataforma moderna, extremamente fácil de usar e com inúmeras vantagens que transformam o aprendizado em uma experiência envolvente e eficiente.");
+
   const platformFeatures = [
     {
       icon: <Monitor className="text-white" size={20} />,
@@ -47,13 +62,18 @@ export default function StudentExperience() {
           
           {/* Content (Now Left on Desktop) */}
           <div className="w-full lg:w-1/2 order-1">
-            <span className="text-accent font-bold tracking-widest text-sm uppercase mb-3 block">Experiência do Aluno</span>
+            <span className="text-accent font-bold tracking-widest text-sm uppercase mb-3 block">{label}</span>
             <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-gray-900 mb-8 leading-tight">
-              Plataforma <span className="text-accent">intuitiva</span> e repleta de recursos
+              {title.split(/(intuitiva)/gi).map((part, i) => {
+                if (part.toLowerCase() === "intuitiva") {
+                  return <span key={i} className="text-accent">{part}</span>;
+                }
+                return part;
+              })}
             </h2>
             
             <p className="text-gray-600 text-lg mb-10 leading-relaxed">
-              Seus alunos terão acesso a uma plataforma moderna, extremamente fácil de usar e com inúmeras vantagens que transformam o aprendizado em uma experiência envolvente e eficiente.
+              {description}
             </p>
 
             <div className="grid grid-cols-2 gap-5 mb-12">

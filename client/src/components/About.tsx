@@ -1,7 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, TrendingUp, DollarSign, Users, Package, Clock } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 export default function About() {
+  // Buscar configurações da seção About do banco
+  const { data: aboutSettings = [] } = trpc.home.getHomeSection.useQuery({ section: "about" });
+
+  // Função auxiliar para pegar valor de um campo
+  const getFieldValue = (field: string, defaultValue: string = "") => {
+    const item = (aboutSettings as any[]).find((s: any) => s.field === field);
+    return item?.value || defaultValue;
+  };
+
+  // Valores padrão (fallback)
+  const title = getFieldValue("title", "Empresários Educacionais: transformem propósito em rentabilidade real com o maior ecossistema de cursos do mundo");
+  const subtitle = getFieldValue("subtitle", "Ser parceiro da LA Educação é sair do jogo pequeno.");
+  const description = getFieldValue("description", "Enquanto o mercado paga 30%, aqui você constrói autoridade, domina seu negócio e pode lucrar até 1000% sobre cada matrícula.");
+  const sectionTitle = getFieldValue("section_title", "Conheça agora os diferenciais de Ser LA:");
+
   const benefits = [
     {
       icon: <DollarSign className="text-white" size={20} />,
@@ -65,19 +81,24 @@ export default function About() {
           {/* Content */}
           <div className="w-full lg:w-1/2 order-1 lg:order-2">
             <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-gray-900 mb-8 leading-tight">
-              <span className="text-primary">Empresários Educacionais:</span> transformem propósito em <span className="text-primary">rentabilidade</span> real com o maior ecossistema de cursos do mundo
+              {title.split(/(\bEmpresários Educacionais:|\brentabilidade\b)/g).map((part, i) => {
+                if (part === "Empresários Educacionais:" || part === "rentabilidade") {
+                  return <span key={i} className="text-primary">{part}</span>;
+                }
+                return part;
+              })}
             </h2>
             
             <p className="text-gray-700 text-lg mb-4 leading-relaxed font-semibold">
-              Ser parceiro da LA Educação é sair do jogo pequeno.
+              {subtitle}
             </p>
 
             <p className="text-gray-600 text-lg mb-10 leading-relaxed">
-              Enquanto o mercado paga 30%, aqui você constrói autoridade, domina seu negócio e pode lucrar até 1000% sobre cada matrícula.
+              {description}
             </p>
 
             <h3 className="text-xl font-bold text-primary mb-6">
-              Conheça agora os diferenciais de Ser LA:
+              {sectionTitle}
             </h3>
 
             {/* Grid de 2 colunas para os diferenciais */}
