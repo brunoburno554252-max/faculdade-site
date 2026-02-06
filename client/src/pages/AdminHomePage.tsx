@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,11 +9,29 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, MoveUp, MoveDown, Save, Image as ImageIcon, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Pencil, Trash2, MoveUp, MoveDown, Save, Image as ImageIcon, X, DollarSign, BookOpen, Wallet, TrendingUp, Users, Clock, Award, Headphones, FileText, Check } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import ImageUpload from "@/components/ImageUpload";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
+
+// Mapa de ícones disponíveis
+const iconMap: { [key: string]: any } = {
+  DollarSign, BookOpen, Wallet, TrendingUp, Users, Clock, Award, Headphones, FileText, Check
+};
+
+const iconOptions = [
+  { value: "DollarSign", label: "Dinheiro" },
+  { value: "BookOpen", label: "Livro" },
+  { value: "Wallet", label: "Carteira" },
+  { value: "TrendingUp", label: "Crescimento" },
+  { value: "Users", label: "Pessoas" },
+  { value: "Clock", label: "Relógio" },
+  { value: "Award", label: "Prêmio" },
+  { value: "Headphones", label: "Suporte" },
+  { value: "FileText", label: "Documento" },
+  { value: "Check", label: "Check" },
+];
 
 // ============ BANNER SECTION ============
 function BannerSection() {
@@ -21,7 +39,6 @@ function BannerSection() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [showForm, setShowForm] = useState(false);
   
-  // Form states
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [image, setImage] = useState("");
@@ -35,137 +52,71 @@ function BannerSection() {
   const { data: banners = [], refetch } = trpc.adminBanners.getAll.useQuery();
   
   const createMutation = trpc.adminBanners.create.useMutation({
-    onSuccess: () => {
-      toast.success("Banner criado com sucesso!");
-      refetch();
-      resetForm();
-    },
-    onError: (error: any) => toast.error(`Erro: ${error.message}`),
+    onSuccess: () => { toast.success("Banner criado!"); refetch(); resetForm(); },
+    onError: (e: any) => toast.error(`Erro: ${e.message}`),
   });
 
   const updateMutation = trpc.adminBanners.update.useMutation({
-    onSuccess: () => {
-      toast.success("Banner atualizado!");
-      refetch();
-      resetForm();
-    },
-    onError: (error: any) => toast.error(`Erro: ${error.message}`),
+    onSuccess: () => { toast.success("Banner atualizado!"); refetch(); resetForm(); },
+    onError: (e: any) => toast.error(`Erro: ${e.message}`),
   });
 
   const deleteMutation = trpc.adminBanners.delete.useMutation({
-    onSuccess: () => {
-      toast.success("Banner excluído!");
-      refetch();
-      setDeleteId(null);
-    },
-    onError: (error: any) => toast.error(`Erro: ${error.message}`),
+    onSuccess: () => { toast.success("Banner excluído!"); refetch(); setDeleteId(null); },
+    onError: (e: any) => toast.error(`Erro: ${e.message}`),
   });
 
   const reorderMutation = trpc.adminBanners.reorder.useMutation({
-    onSuccess: () => {
-      toast.success("Ordem atualizada!");
-      refetch();
-    },
+    onSuccess: () => { toast.success("Ordem atualizada!"); refetch(); },
   });
 
   const resetForm = () => {
     setEditingBanner(null);
     setShowForm(false);
-    setTitle("");
-    setSubtitle("");
-    setImage("");
-    setCtaText("");
-    setCtaLink("");
-    setDisplayDuration(10);
-    setTextPosition("left");
-    setOverlayOpacity(50);
-    setIsActive(true);
+    setTitle(""); setSubtitle(""); setImage(""); setCtaText(""); setCtaLink("");
+    setDisplayDuration(10); setTextPosition("left"); setOverlayOpacity(50); setIsActive(true);
   };
 
   const handleEdit = (banner: any) => {
     setEditingBanner(banner);
     setShowForm(true);
-    setTitle(banner.title);
-    setSubtitle(banner.subtitle || "");
-    setImage(banner.image);
-    setCtaText(banner.ctaText || "");
-    setCtaLink(banner.ctaLink || "");
-    setDisplayDuration(banner.displayDuration || 10);
-    setTextPosition(banner.textPosition || "left");
-    setOverlayOpacity(banner.overlayOpacity || 50);
-    setIsActive(banner.isActive);
+    setTitle(banner.title); setSubtitle(banner.subtitle || ""); setImage(banner.image);
+    setCtaText(banner.ctaText || ""); setCtaLink(banner.ctaLink || "");
+    setDisplayDuration(banner.displayDuration || 10); setTextPosition(banner.textPosition || "left");
+    setOverlayOpacity(banner.overlayOpacity || 50); setIsActive(banner.isActive);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !image) {
-      toast.error("Título e imagem são obrigatórios");
-      return;
-    }
-
-    const data = {
-      title,
-      subtitle: subtitle || undefined,
-      image,
-      ctaText: ctaText || undefined,
-      ctaLink: ctaLink || undefined,
-      displayDuration,
-      textPosition,
-      overlayOpacity,
-      isActive,
-    };
-
-    if (editingBanner) {
-      updateMutation.mutate({ id: editingBanner.id, ...data });
-    } else {
-      const maxOrder = Math.max(...banners.map((b: any) => b.order), 0);
-      createMutation.mutate({ ...data, order: maxOrder + 1 });
-    }
+    if (!title.trim() || !image) { toast.error("Título e imagem são obrigatórios"); return; }
+    const data = { title, subtitle: subtitle || undefined, image, ctaText: ctaText || undefined, ctaLink: ctaLink || undefined, displayDuration, textPosition, overlayOpacity, isActive };
+    if (editingBanner) { updateMutation.mutate({ id: editingBanner.id, ...data }); }
+    else { const maxOrder = Math.max(...banners.map((b: any) => b.order), 0); createMutation.mutate({ ...data, order: maxOrder + 1 }); }
   };
 
   const sortedBanners = [...banners].sort((a: any, b: any) => a.order - b.order);
-  const maxOrder = Math.max(...banners.map((b: any) => b.order), 0);
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Banners do Hero</h2>
-        <Button onClick={() => { resetForm(); setShowForm(true); }} className="gap-2">
-          <Plus className="w-4 h-4" /> Novo Banner
-        </Button>
+        <Button onClick={() => { resetForm(); setShowForm(true); }} className="gap-2"><Plus className="w-4 h-4" /> Novo Banner</Button>
       </div>
 
       {showForm && (
         <Card className="border-primary">
-          <CardHeader>
-            <CardTitle>{editingBanner ? "Editar Banner" : "Novo Banner"}</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>{editingBanner ? "Editar Banner" : "Novo Banner"}</CardTitle></CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <div>
-                    <Label>Título *</Label>
-                    <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título do banner" />
-                  </div>
-                  <div>
-                    <Label>Subtítulo</Label>
-                    <Textarea value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder="Subtítulo" rows={2} />
-                  </div>
-                  <div>
-                    <Label>Texto do Botão</Label>
-                    <Input value={ctaText} onChange={(e) => setCtaText(e.target.value)} placeholder="Ex: Quero ser Parceiro" />
-                  </div>
-                  <div>
-                    <Label>Link do Botão</Label>
-                    <Input value={ctaLink} onChange={(e) => setCtaLink(e.target.value)} placeholder="Ex: /parceiro" />
-                  </div>
+                  <div><Label>Título *</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título do banner" /></div>
+                  <div><Label>Subtítulo</Label><Textarea value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder="Subtítulo" rows={2} /></div>
+                  <div><Label>Texto do Botão</Label><Input value={ctaText} onChange={(e) => setCtaText(e.target.value)} placeholder="Ex: Quero ser Parceiro" /></div>
+                  <div><Label>Link do Botão</Label><Input value={ctaLink} onChange={(e) => setCtaLink(e.target.value)} placeholder="Ex: /parceiro" /></div>
                 </div>
                 <div className="space-y-4">
-                  <div>
-                    <Label>Imagem do Banner *</Label>
-                    <ImageUpload value={image} onChange={setImage} onRemove={() => setImage("")} aspectRatio={16/9} />
-                  </div>
+                  <div><Label>Imagem do Banner *</Label><ImageUpload value={image} onChange={setImage} onRemove={() => setImage("")} aspectRatio={16/9} /></div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Posição do Texto</Label>
@@ -178,25 +129,14 @@ function BannerSection() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Switch checked={isActive} onCheckedChange={setIsActive} />
-                      <Label>Ativo</Label>
-                    </div>
+                    <div><Label>Duração (s)</Label><Input type="number" value={displayDuration} onChange={(e) => setDisplayDuration(Number(e.target.value))} min={3} max={30} /></div>
                   </div>
-                  <div>
-                    <Label>Opacidade do Overlay: {overlayOpacity}%</Label>
-                    <Slider min={0} max={100} step={5} value={[overlayOpacity]} onValueChange={(v) => setOverlayOpacity(v[0])} />
-                  </div>
-                  <div>
-                    <Label>Duração: {displayDuration}s</Label>
-                    <Slider min={3} max={30} value={[displayDuration]} onValueChange={(v) => setDisplayDuration(v[0])} />
-                  </div>
+                  <div><Label>Opacidade do Overlay: {overlayOpacity}%</Label><Slider value={[overlayOpacity]} onValueChange={(v) => setOverlayOpacity(v[0])} min={0} max={100} step={5} /></div>
+                  <div className="flex items-center gap-2"><Switch checked={isActive} onCheckedChange={setIsActive} /><Label>Banner Ativo</Label></div>
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                  <Save className="w-4 h-4 mr-2" /> {editingBanner ? "Atualizar" : "Criar"}
-                </Button>
+                <Button type="submit"><Save className="w-4 h-4 mr-2" /> {editingBanner ? "Atualizar" : "Criar"}</Button>
                 <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
               </div>
             </form>
@@ -204,23 +144,20 @@ function BannerSection() {
         </Card>
       )}
 
-      <div className="space-y-3">
+      <div className="grid gap-4">
         {sortedBanners.map((banner: any, index: number) => (
-          <div key={banner.id} className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50">
-            <img src={banner.image || "/placeholder.jpg"} alt={banner.title} className="w-24 h-14 object-cover rounded" />
+          <div key={banner.id} className="flex items-center gap-4 p-4 border rounded-lg bg-white">
+            <img src={banner.image} alt={banner.title} className="w-32 h-20 object-cover rounded" />
             <div className="flex-1">
               <h3 className="font-semibold">{banner.title}</h3>
-              <span className={`text-xs px-2 py-0.5 rounded ${banner.isActive ? "bg-green-100 text-green-700" : "bg-gray-100"}`}>
+              <p className="text-sm text-gray-500">{banner.subtitle}</p>
+              <span className={`text-xs px-2 py-1 rounded ${banner.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
                 {banner.isActive ? "Ativo" : "Inativo"}
               </span>
             </div>
             <div className="flex gap-1">
-              <Button variant="ghost" size="sm" disabled={index === 0} onClick={() => reorderMutation.mutate({ id: banner.id, newOrder: banner.order - 1 })}>
-                <MoveUp className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" disabled={index === sortedBanners.length - 1} onClick={() => reorderMutation.mutate({ id: banner.id, newOrder: banner.order + 1 })}>
-                <MoveDown className="w-4 h-4" />
-              </Button>
+              <Button variant="ghost" size="sm" disabled={index === 0} onClick={() => reorderMutation.mutate({ id: banner.id, newOrder: banner.order - 1 })}><MoveUp className="w-4 h-4" /></Button>
+              <Button variant="ghost" size="sm" disabled={index === sortedBanners.length - 1} onClick={() => reorderMutation.mutate({ id: banner.id, newOrder: banner.order + 1 })}><MoveDown className="w-4 h-4" /></Button>
               <Button variant="ghost" size="sm" onClick={() => handleEdit(banner)}><Pencil className="w-4 h-4" /></Button>
               <Button variant="ghost" size="sm" className="text-red-600" onClick={() => setDeleteId(banner.id)}><Trash2 className="w-4 h-4" /></Button>
             </div>
@@ -228,15 +165,7 @@ function BannerSection() {
         ))}
       </div>
 
-      {deleteId && (
-        <DeleteConfirmDialog
-          open={true}
-          onOpenChange={(open) => !open && setDeleteId(null)}
-          onConfirm={() => deleteMutation.mutate({ id: deleteId })}
-          title="Excluir Banner"
-          description="Tem certeza que deseja excluir este banner?"
-        />
-      )}
+      {deleteId && <DeleteConfirmDialog open={true} onOpenChange={(open) => !open && setDeleteId(null)} onConfirm={() => deleteMutation.mutate({ id: deleteId })} title="Excluir Banner" description="Tem certeza que deseja excluir este banner?" />}
     </div>
   );
 }
@@ -267,68 +196,37 @@ function SelosSection() {
     onError: (e: any) => toast.error(`Erro: ${e.message}`),
   });
 
-  const resetForm = () => {
-    setEditingId(null);
-    setShowForm(false);
-    setName("");
-    setImageUrl("");
-    setLink("");
-  };
+  const resetForm = () => { setEditingId(null); setShowForm(false); setName(""); setImageUrl(""); setLink(""); };
 
   const handleEdit = (selo: any) => {
-    setEditingId(selo.id);
-    setShowForm(true);
-    setName(selo.name);
-    setImageUrl(selo.image_url);
-    setLink(selo.link || "");
+    setEditingId(selo.id); setShowForm(true); setName(selo.name); setImageUrl(selo.image_url); setLink(selo.link || "");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !imageUrl) {
-      toast.error("Nome e imagem são obrigatórios");
-      return;
-    }
-
-    if (editingId) {
-      updateMutation.mutate({ id: editingId, name, imageUrl, link: link || undefined });
-    } else {
-      const maxOrder = Math.max(...selos.map((s: any) => s.sort_order || 0), 0);
-      addMutation.mutate({ name, imageUrl, link: link || undefined, sortOrder: maxOrder + 1 });
-    }
+    if (!name.trim() || !imageUrl) { toast.error("Nome e imagem são obrigatórios"); return; }
+    if (editingId) { updateMutation.mutate({ id: editingId, name, imageUrl, link: link || undefined }); }
+    else { const maxOrder = Math.max(...selos.map((s: any) => s.sort_order || 0), 0); addMutation.mutate({ name, imageUrl, link: link || undefined, sortOrder: maxOrder + 1 }); }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Selos de Qualidade</h2>
-        <Button onClick={() => { resetForm(); setShowForm(true); }} className="gap-2">
-          <Plus className="w-4 h-4" /> Novo Selo
-        </Button>
+        <Button onClick={() => { resetForm(); setShowForm(true); }} className="gap-2"><Plus className="w-4 h-4" /> Novo Selo</Button>
       </div>
 
       {showForm && (
         <Card className="border-primary">
-          <CardHeader>
-            <CardTitle>{editingId ? "Editar Selo" : "Novo Selo"}</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>{editingId ? "Editar Selo" : "Novo Selo"}</CardTitle></CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <div>
-                    <Label>Nome do Selo *</Label>
-                    <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Certificado MEC" />
-                  </div>
-                  <div>
-                    <Label>Link (opcional)</Label>
-                    <Input value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://..." />
-                  </div>
+                  <div><Label>Nome do Selo *</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Certificado MEC" /></div>
+                  <div><Label>Link (opcional)</Label><Input value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://..." /></div>
                 </div>
-                <div>
-                  <Label>Imagem do Selo *</Label>
-                  <ImageUpload value={imageUrl} onChange={setImageUrl} onRemove={() => setImageUrl("")} aspectRatio={1} />
-                </div>
+                <div><Label>Imagem do Selo *</Label><ImageUpload value={imageUrl} onChange={setImageUrl} onRemove={() => setImageUrl("")} aspectRatio={1} /></div>
               </div>
               <div className="flex gap-2">
                 <Button type="submit"><Save className="w-4 h-4 mr-2" /> {editingId ? "Atualizar" : "Adicionar"}</Button>
@@ -341,26 +239,20 @@ function SelosSection() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {selos.map((selo: any) => (
-          <div key={selo.id} className="border rounded-lg p-3 text-center group relative">
-            <img src={selo.image_url} alt={selo.name} className="h-16 mx-auto object-contain mb-2" />
-            <p className="text-xs font-medium truncate">{selo.name}</p>
-            <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => handleEdit(selo)}><Pencil className="w-3 h-3" /></Button>
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-red-600" onClick={() => setDeleteId(selo.id)}><Trash2 className="w-3 h-3" /></Button>
-            </div>
-          </div>
+          <Card key={selo.id} className="relative group">
+            <CardContent className="p-4 text-center">
+              <img src={selo.image_url} alt={selo.name} className="h-16 mx-auto object-contain mb-2" />
+              <p className="text-sm font-medium truncate">{selo.name}</p>
+              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                <Button variant="ghost" size="sm" onClick={() => handleEdit(selo)}><Pencil className="w-3 h-3" /></Button>
+                <Button variant="ghost" size="sm" className="text-red-600" onClick={() => setDeleteId(selo.id)}><Trash2 className="w-3 h-3" /></Button>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      {deleteId && (
-        <DeleteConfirmDialog
-          open={true}
-          onOpenChange={(open) => !open && setDeleteId(null)}
-          onConfirm={() => deleteMutation.mutate({ id: deleteId })}
-          title="Excluir Selo"
-          description="Tem certeza que deseja excluir este selo?"
-        />
-      )}
+      {deleteId && <DeleteConfirmDialog open={true} onOpenChange={(open) => !open && setDeleteId(null)} onConfirm={() => deleteMutation.mutate({ id: deleteId })} title="Excluir Selo" description="Tem certeza que deseja excluir este selo?" />}
     </div>
   );
 }
@@ -391,68 +283,37 @@ function ImprensaSection() {
     onError: (e: any) => toast.error(`Erro: ${e.message}`),
   });
 
-  const resetForm = () => {
-    setEditingId(null);
-    setShowForm(false);
-    setName("");
-    setImageUrl("");
-    setLink("");
-  };
+  const resetForm = () => { setEditingId(null); setShowForm(false); setName(""); setImageUrl(""); setLink(""); };
 
   const handleEdit = (item: any) => {
-    setEditingId(item.id);
-    setShowForm(true);
-    setName(item.name);
-    setImageUrl(item.image_url);
-    setLink(item.link || "");
+    setEditingId(item.id); setShowForm(true); setName(item.name); setImageUrl(item.image_url); setLink(item.link || "");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !imageUrl) {
-      toast.error("Nome e imagem são obrigatórios");
-      return;
-    }
-
-    if (editingId) {
-      updateMutation.mutate({ id: editingId, name, imageUrl, link: link || undefined });
-    } else {
-      const maxOrder = Math.max(...press.map((p: any) => p.sort_order || 0), 0);
-      addMutation.mutate({ name, imageUrl, link: link || undefined, sortOrder: maxOrder + 1 });
-    }
+    if (!name.trim() || !imageUrl) { toast.error("Nome e imagem são obrigatórios"); return; }
+    if (editingId) { updateMutation.mutate({ id: editingId, name, imageUrl, link: link || undefined }); }
+    else { const maxOrder = Math.max(...press.map((p: any) => p.sort_order || 0), 0); addMutation.mutate({ name, imageUrl, link: link || undefined, sortOrder: maxOrder + 1 }); }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Imprensa Nacional</h2>
-        <Button onClick={() => { resetForm(); setShowForm(true); }} className="gap-2">
-          <Plus className="w-4 h-4" /> Nova Mídia
-        </Button>
+        <Button onClick={() => { resetForm(); setShowForm(true); }} className="gap-2"><Plus className="w-4 h-4" /> Nova Mídia</Button>
       </div>
 
       {showForm && (
         <Card className="border-primary">
-          <CardHeader>
-            <CardTitle>{editingId ? "Editar Mídia" : "Nova Mídia"}</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>{editingId ? "Editar Mídia" : "Nova Mídia"}</CardTitle></CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <div>
-                    <Label>Nome da Mídia *</Label>
-                    <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: G1, ISTOÉ" />
-                  </div>
-                  <div>
-                    <Label>Link da Notícia (opcional)</Label>
-                    <Input value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://..." />
-                  </div>
+                  <div><Label>Nome da Mídia *</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: G1, ISTOÉ, CARAS" /></div>
+                  <div><Label>Link da Matéria (opcional)</Label><Input value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://..." /></div>
                 </div>
-                <div>
-                  <Label>Logo da Mídia *</Label>
-                  <ImageUpload value={imageUrl} onChange={setImageUrl} onRemove={() => setImageUrl("")} aspectRatio={3/1} />
-                </div>
+                <div><Label>Logo da Mídia *</Label><ImageUpload value={imageUrl} onChange={setImageUrl} onRemove={() => setImageUrl("")} aspectRatio={3/1} /></div>
               </div>
               <div className="flex gap-2">
                 <Button type="submit"><Save className="w-4 h-4 mr-2" /> {editingId ? "Atualizar" : "Adicionar"}</Button>
@@ -465,54 +326,85 @@ function ImprensaSection() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {press.map((item: any) => (
-          <div key={item.id} className="border rounded-lg p-3 text-center group relative">
-            <img src={item.image_url} alt={item.name} className="h-12 mx-auto object-contain mb-2" />
-            <p className="text-xs font-medium truncate">{item.name}</p>
-            <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => handleEdit(item)}><Pencil className="w-3 h-3" /></Button>
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-red-600" onClick={() => setDeleteId(item.id)}><Trash2 className="w-3 h-3" /></Button>
-            </div>
-          </div>
+          <Card key={item.id} className="relative group">
+            <CardContent className="p-4 text-center">
+              <img src={item.image_url} alt={item.name} className="h-12 mx-auto object-contain mb-2" />
+              <p className="text-sm font-medium truncate">{item.name}</p>
+              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                <Button variant="ghost" size="sm" onClick={() => handleEdit(item)}><Pencil className="w-3 h-3" /></Button>
+                <Button variant="ghost" size="sm" className="text-red-600" onClick={() => setDeleteId(item.id)}><Trash2 className="w-3 h-3" /></Button>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      {deleteId && (
-        <DeleteConfirmDialog
-          open={true}
-          onOpenChange={(open) => !open && setDeleteId(null)}
-          onConfirm={() => deleteMutation.mutate({ id: deleteId })}
-          title="Excluir Mídia"
-          description="Tem certeza que deseja excluir esta mídia?"
-        />
-      )}
+      {deleteId && <DeleteConfirmDialog open={true} onOpenChange={(open) => !open && setDeleteId(null)} onConfirm={() => deleteMutation.mutate({ id: deleteId })} title="Excluir Mídia" description="Tem certeza que deseja excluir esta mídia?" />}
     </div>
   );
 }
 
-// ============ ABOUT/DIFERENCIAIS SECTION ============
+// ============ DIFERENCIAIS SECTION (CRUD COMPLETO) ============
 function DiferenciaisSection() {
-  const { data: settings = [], refetch } = trpc.home.getHomeSettings.useQuery();
-  const updateMutation = trpc.home.updateHomeSection.useMutation({
-    onSuccess: () => { toast.success("Alterações salvas!"); refetch(); },
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [icon, setIcon] = useState("DollarSign");
+
+  // Textos da seção
+  const { data: settings = [], refetch: refetchSettings } = trpc.home.getHomeSettings.useQuery();
+  const { data: diferenciais = [], refetch } = trpc.home.getDiferenciais.useQuery();
+  
+  const updateSettingsMutation = trpc.home.updateHomeSection.useMutation({
+    onSuccess: () => { toast.success("Textos salvos!"); refetchSettings(); },
+    onError: (e: any) => toast.error(`Erro: ${e.message}`),
+  });
+
+  const addMutation = trpc.home.addDiferencial.useMutation({
+    onSuccess: () => { toast.success("Diferencial adicionado!"); refetch(); resetForm(); },
+    onError: (e: any) => toast.error(`Erro: ${e.message}`),
+  });
+
+  const updateMutation = trpc.home.updateDiferencial.useMutation({
+    onSuccess: () => { toast.success("Diferencial atualizado!"); refetch(); resetForm(); },
+    onError: (e: any) => toast.error(`Erro: ${e.message}`),
+  });
+
+  const deleteMutation = trpc.home.deleteDiferencial.useMutation({
+    onSuccess: () => { toast.success("Diferencial removido!"); refetch(); setDeleteId(null); },
     onError: (e: any) => toast.error(`Erro: ${e.message}`),
   });
 
   const getValue = (key: string) => settings.find((s: any) => s.field_key === key)?.field_value || "";
-
   const [aboutTitle, setAboutTitle] = useState("");
   const [aboutSubtitle, setAboutSubtitle] = useState("");
   const [aboutDescription, setAboutDescription] = useState("");
   const [aboutImage, setAboutImage] = useState("");
 
   useEffect(() => {
-    setAboutTitle(getValue("about_title"));
-    setAboutSubtitle(getValue("about_subtitle"));
-    setAboutDescription(getValue("about_description"));
-    setAboutImage(getValue("about_image"));
+    setAboutTitle(getValue("about_title") || "Empresários Educacionais:");
+    setAboutSubtitle(getValue("about_subtitle") || "transformem propósito em rentabilidade real");
+    setAboutDescription(getValue("about_description") || "Ser parceiro da LA Educação é sair do jogo pequeno.");
+    setAboutImage(getValue("about_image") || "");
   }, [settings]);
 
-  const handleSave = () => {
-    updateMutation.mutate({
+  const resetForm = () => { setEditingId(null); setShowForm(false); setTitle(""); setDescription(""); setIcon("DollarSign"); };
+
+  const handleEdit = (item: any) => {
+    setEditingId(item.id); setShowForm(true); setTitle(item.title); setDescription(item.description || ""); setIcon(item.icon || "DollarSign");
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) { toast.error("Título é obrigatório"); return; }
+    if (editingId) { updateMutation.mutate({ id: editingId, title, description, icon }); }
+    else { const maxOrder = Math.max(...diferenciais.map((d: any) => d.sort_order || 0), 0); addMutation.mutate({ title, description, icon, sortOrder: maxOrder + 1 }); }
+  };
+
+  const handleSaveTexts = () => {
+    updateSettingsMutation.mutate({
       section: "about",
       fields: [
         { key: "about_title", value: aboutTitle },
@@ -527,61 +419,150 @@ function DiferenciaisSection() {
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Seção Empresários Educacionais</h2>
       
+      {/* Textos da Seção */}
       <Card>
-        <CardContent className="pt-6 space-y-4">
+        <CardHeader><CardTitle>Textos Principais</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div>
-                <Label>Título Principal</Label>
-                <Input value={aboutTitle} onChange={(e) => setAboutTitle(e.target.value)} placeholder="Empresários Educacionais:" />
-              </div>
-              <div>
-                <Label>Subtítulo</Label>
-                <Input value={aboutSubtitle} onChange={(e) => setAboutSubtitle(e.target.value)} placeholder="transformem propósito em..." />
-              </div>
-              <div>
-                <Label>Descrição</Label>
-                <Textarea value={aboutDescription} onChange={(e) => setAboutDescription(e.target.value)} rows={4} placeholder="Ser parceiro da LA Educação..." />
-              </div>
+              <div><Label>Título Principal</Label><Input value={aboutTitle} onChange={(e) => setAboutTitle(e.target.value)} placeholder="Empresários Educacionais:" /></div>
+              <div><Label>Subtítulo</Label><Input value={aboutSubtitle} onChange={(e) => setAboutSubtitle(e.target.value)} placeholder="transformem propósito em..." /></div>
+              <div><Label>Descrição</Label><Textarea value={aboutDescription} onChange={(e) => setAboutDescription(e.target.value)} rows={4} placeholder="Ser parceiro da LA Educação..." /></div>
             </div>
-            <div>
-              <Label>Imagem da Seção</Label>
-              <ImageUpload value={aboutImage} onChange={setAboutImage} onRemove={() => setAboutImage("")} aspectRatio={4/3} />
-            </div>
+            <div><Label>Imagem da Seção</Label><ImageUpload value={aboutImage} onChange={setAboutImage} onRemove={() => setAboutImage("")} aspectRatio={4/3} /></div>
           </div>
-          <Button onClick={handleSave} disabled={updateMutation.isPending}>
-            <Save className="w-4 h-4 mr-2" /> Salvar Alterações
-          </Button>
+          <Button onClick={handleSaveTexts} disabled={updateSettingsMutation.isPending}><Save className="w-4 h-4 mr-2" /> Salvar Textos</Button>
         </CardContent>
       </Card>
+
+      {/* Lista de Diferenciais */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Diferenciais (Cards)</CardTitle>
+          <Button onClick={() => { resetForm(); setShowForm(true); }} size="sm" className="gap-2"><Plus className="w-4 h-4" /> Novo Diferencial</Button>
+        </CardHeader>
+        <CardContent>
+          {showForm && (
+            <Card className="border-primary mb-4">
+              <CardContent className="pt-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div><Label>Título *</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Maior Repasse do Brasil" /></div>
+                    <div><Label>Descrição</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} placeholder="Descrição do diferencial..." /></div>
+                    <div>
+                      <Label>Ícone</Label>
+                      <Select value={icon} onValueChange={setIcon}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {iconOptions.map((opt) => {
+                            const IconComp = iconMap[opt.value];
+                            return (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                <div className="flex items-center gap-2"><IconComp className="w-4 h-4" />{opt.label}</div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit"><Save className="w-4 h-4 mr-2" /> {editingId ? "Atualizar" : "Adicionar"}</Button>
+                    <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid gap-3">
+            {diferenciais.map((item: any) => {
+              const IconComp = iconMap[item.icon] || DollarSign;
+              return (
+                <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg bg-white">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                    <IconComp className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p className="text-sm text-gray-500 line-clamp-1">{item.description}</p>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="sm" onClick={() => handleEdit(item)}><Pencil className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="sm" className="text-red-600" onClick={() => setDeleteId(item.id)}><Trash2 className="w-4 h-4" /></Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {deleteId && <DeleteConfirmDialog open={true} onOpenChange={(open) => !open && setDeleteId(null)} onConfirm={() => deleteMutation.mutate({ id: deleteId })} title="Excluir Diferencial" description="Tem certeza que deseja excluir este diferencial?" />}
     </div>
   );
 }
 
-// ============ PLATAFORMA SECTION ============
+// ============ PLATAFORMA SECTION (CRUD COMPLETO) ============
 function PlataformaSection() {
-  const { data: settings = [], refetch } = trpc.home.getHomeSettings.useQuery();
-  const updateMutation = trpc.home.updateHomeSection.useMutation({
-    onSuccess: () => { toast.success("Alterações salvas!"); refetch(); },
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [icon, setIcon] = useState("Check");
+
+  const { data: settings = [], refetch: refetchSettings } = trpc.home.getHomeSettings.useQuery();
+  const { data: features = [], refetch } = trpc.home.getPlatformFeatures.useQuery();
+  
+  const updateSettingsMutation = trpc.home.updateHomeSection.useMutation({
+    onSuccess: () => { toast.success("Textos salvos!"); refetchSettings(); },
+    onError: (e: any) => toast.error(`Erro: ${e.message}`),
+  });
+
+  const addMutation = trpc.home.addPlatformFeature.useMutation({
+    onSuccess: () => { toast.success("Feature adicionada!"); refetch(); resetForm(); },
+    onError: (e: any) => toast.error(`Erro: ${e.message}`),
+  });
+
+  const updateMutation = trpc.home.updatePlatformFeature.useMutation({
+    onSuccess: () => { toast.success("Feature atualizada!"); refetch(); resetForm(); },
+    onError: (e: any) => toast.error(`Erro: ${e.message}`),
+  });
+
+  const deleteMutation = trpc.home.deletePlatformFeature.useMutation({
+    onSuccess: () => { toast.success("Feature removida!"); refetch(); setDeleteId(null); },
     onError: (e: any) => toast.error(`Erro: ${e.message}`),
   });
 
   const getValue = (key: string) => settings.find((s: any) => s.field_key === key)?.field_value || "";
-
   const [platformTitle, setPlatformTitle] = useState("");
   const [platformSubtitle, setPlatformSubtitle] = useState("");
   const [platformDescription, setPlatformDescription] = useState("");
   const [platformImage, setPlatformImage] = useState("");
 
   useEffect(() => {
-    setPlatformTitle(getValue("platform_title"));
-    setPlatformSubtitle(getValue("platform_subtitle"));
-    setPlatformDescription(getValue("platform_description"));
-    setPlatformImage(getValue("platform_image"));
+    setPlatformTitle(getValue("platform_title") || "Plataforma Intuitiva");
+    setPlatformSubtitle(getValue("platform_subtitle") || "Experiência do Aluno");
+    setPlatformDescription(getValue("platform_description") || "");
+    setPlatformImage(getValue("platform_image") || "");
   }, [settings]);
 
-  const handleSave = () => {
-    updateMutation.mutate({
+  const resetForm = () => { setEditingId(null); setShowForm(false); setTitle(""); setDescription(""); setIcon("Check"); };
+
+  const handleEdit = (item: any) => {
+    setEditingId(item.id); setShowForm(true); setTitle(item.title); setDescription(item.description || ""); setIcon(item.icon || "Check");
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) { toast.error("Título é obrigatório"); return; }
+    if (editingId) { updateMutation.mutate({ id: editingId, title, description, icon }); }
+    else { const maxOrder = Math.max(...features.map((f: any) => f.sort_order || 0), 0); addMutation.mutate({ title, description, icon, sortOrder: maxOrder + 1 }); }
+  };
+
+  const handleSaveTexts = () => {
+    updateSettingsMutation.mutate({
       section: "platform",
       fields: [
         { key: "platform_title", value: platformTitle },
@@ -597,60 +578,118 @@ function PlataformaSection() {
       <h2 className="text-xl font-semibold">Seção Plataforma Intuitiva</h2>
       
       <Card>
-        <CardContent className="pt-6 space-y-4">
+        <CardHeader><CardTitle>Textos Principais</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div>
-                <Label>Título</Label>
-                <Input value={platformTitle} onChange={(e) => setPlatformTitle(e.target.value)} placeholder="Plataforma Intuitiva" />
-              </div>
-              <div>
-                <Label>Subtítulo</Label>
-                <Input value={platformSubtitle} onChange={(e) => setPlatformSubtitle(e.target.value)} placeholder="Experiência do Aluno" />
-              </div>
-              <div>
-                <Label>Descrição</Label>
-                <Textarea value={platformDescription} onChange={(e) => setPlatformDescription(e.target.value)} rows={4} placeholder="Descrição da plataforma..." />
-              </div>
+              <div><Label>Título</Label><Input value={platformTitle} onChange={(e) => setPlatformTitle(e.target.value)} placeholder="Plataforma Intuitiva" /></div>
+              <div><Label>Subtítulo</Label><Input value={platformSubtitle} onChange={(e) => setPlatformSubtitle(e.target.value)} placeholder="Experiência do Aluno" /></div>
+              <div><Label>Descrição</Label><Textarea value={platformDescription} onChange={(e) => setPlatformDescription(e.target.value)} rows={4} placeholder="Descrição da plataforma..." /></div>
             </div>
-            <div>
-              <Label>Imagem da Plataforma</Label>
-              <ImageUpload value={platformImage} onChange={setPlatformImage} onRemove={() => setPlatformImage("")} aspectRatio={16/9} />
-            </div>
+            <div><Label>Imagem da Plataforma</Label><ImageUpload value={platformImage} onChange={setPlatformImage} onRemove={() => setPlatformImage("")} aspectRatio={16/9} /></div>
           </div>
-          <Button onClick={handleSave} disabled={updateMutation.isPending}>
-            <Save className="w-4 h-4 mr-2" /> Salvar Alterações
-          </Button>
+          <Button onClick={handleSaveTexts} disabled={updateSettingsMutation.isPending}><Save className="w-4 h-4 mr-2" /> Salvar Textos</Button>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Features da Plataforma</CardTitle>
+          <Button onClick={() => { resetForm(); setShowForm(true); }} size="sm" className="gap-2"><Plus className="w-4 h-4" /> Nova Feature</Button>
+        </CardHeader>
+        <CardContent>
+          {showForm && (
+            <Card className="border-primary mb-4">
+              <CardContent className="pt-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div><Label>Título *</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Acesso 24h" /></div>
+                    <div><Label>Descrição</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} placeholder="Descrição da feature..." /></div>
+                    <div>
+                      <Label>Ícone</Label>
+                      <Select value={icon} onValueChange={setIcon}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {iconOptions.map((opt) => {
+                            const IconComp = iconMap[opt.value];
+                            return (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                <div className="flex items-center gap-2"><IconComp className="w-4 h-4" />{opt.label}</div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit"><Save className="w-4 h-4 mr-2" /> {editingId ? "Atualizar" : "Adicionar"}</Button>
+                    <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid gap-3">
+            {features.map((item: any) => {
+              const IconComp = iconMap[item.icon] || Check;
+              return (
+                <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg bg-white">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                    <IconComp className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p className="text-sm text-gray-500 line-clamp-1">{item.description}</p>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="sm" onClick={() => handleEdit(item)}><Pencil className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="sm" className="text-red-600" onClick={() => setDeleteId(item.id)}><Trash2 className="w-4 h-4" /></Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {deleteId && <DeleteConfirmDialog open={true} onOpenChange={(open) => !open && setDeleteId(null)} onConfirm={() => deleteMutation.mutate({ id: deleteId })} title="Excluir Feature" description="Tem certeza que deseja excluir esta feature?" />}
     </div>
   );
 }
 
 // ============ ECOSSISTEMA SECTION ============
 function EcossistemaSection() {
-  const { data: settings = [], refetch } = trpc.home.getHomeSettings.useQuery();
-  const { data: institutions = [], refetch: refetchInst } = trpc.home.getEcosystemInstitutions.useQuery();
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [name, setName] = useState("");
+  const [logo, setLogo] = useState("");
+  const [link, setLink] = useState("");
+  const [description, setDescription] = useState("");
+
+  const { data: settings = [], refetch: refetchSettings } = trpc.home.getHomeSettings.useQuery();
+  const { data: institutions = [], refetch } = trpc.home.getEcosystemInstitutions.useQuery();
   
-  const updateMutation = trpc.home.updateHomeSection.useMutation({
-    onSuccess: () => { toast.success("Alterações salvas!"); refetch(); },
+  const updateSettingsMutation = trpc.home.updateHomeSection.useMutation({
+    onSuccess: () => { toast.success("Textos salvos!"); refetchSettings(); },
     onError: (e: any) => toast.error(`Erro: ${e.message}`),
   });
 
   const getValue = (key: string) => settings.find((s: any) => s.field_key === key)?.field_value || "";
-
   const [ecoTitle, setEcoTitle] = useState("");
   const [ecoSubtitle, setEcoSubtitle] = useState("");
   const [ecoDescription, setEcoDescription] = useState("");
 
   useEffect(() => {
-    setEcoTitle(getValue("ecosystem_title"));
-    setEcoSubtitle(getValue("ecosystem_subtitle"));
-    setEcoDescription(getValue("ecosystem_description"));
+    setEcoTitle(getValue("ecosystem_title") || "Por que somos o maior");
+    setEcoSubtitle(getValue("ecosystem_subtitle") || "Ecossistema Educacional");
+    setEcoDescription(getValue("ecosystem_description") || "À disposição de nossos parceiros e alunos...");
   }, [settings]);
 
-  const handleSave = () => {
-    updateMutation.mutate({
+  const handleSaveTexts = () => {
+    updateSettingsMutation.mutate({
       section: "ecosystem",
       fields: [
         { key: "ecosystem_title", value: ecoTitle },
@@ -665,39 +704,24 @@ function EcossistemaSection() {
       <h2 className="text-xl font-semibold">Seção Ecossistema</h2>
       
       <Card>
-        <CardHeader>
-          <CardTitle>Textos da Seção</CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle>Textos da Seção</CardTitle></CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label>Título</Label>
-            <Input value={ecoTitle} onChange={(e) => setEcoTitle(e.target.value)} placeholder="Por que somos o maior..." />
-          </div>
-          <div>
-            <Label>Subtítulo</Label>
-            <Input value={ecoSubtitle} onChange={(e) => setEcoSubtitle(e.target.value)} placeholder="Ecossistema Educacional" />
-          </div>
-          <div>
-            <Label>Descrição</Label>
-            <Textarea value={ecoDescription} onChange={(e) => setEcoDescription(e.target.value)} rows={3} placeholder="À disposição de nossos parceiros..." />
-          </div>
-          <Button onClick={handleSave} disabled={updateMutation.isPending}>
-            <Save className="w-4 h-4 mr-2" /> Salvar Textos
-          </Button>
+          <div><Label>Título</Label><Input value={ecoTitle} onChange={(e) => setEcoTitle(e.target.value)} placeholder="Por que somos o maior..." /></div>
+          <div><Label>Subtítulo (em destaque)</Label><Input value={ecoSubtitle} onChange={(e) => setEcoSubtitle(e.target.value)} placeholder="Ecossistema Educacional" /></div>
+          <div><Label>Descrição</Label><Textarea value={ecoDescription} onChange={(e) => setEcoDescription(e.target.value)} rows={3} placeholder="À disposição de nossos parceiros..." /></div>
+          <Button onClick={handleSaveTexts} disabled={updateSettingsMutation.isPending}><Save className="w-4 h-4 mr-2" /> Salvar Textos</Button>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Instituições do Ecossistema</CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle>Instituições do Ecossistema</CardTitle></CardHeader>
         <CardContent>
           <p className="text-sm text-gray-500 mb-4">
-            Para gerenciar as instituições do ecossistema (adicionar, editar, remover logos), acesse a seção dedicada no menu lateral.
+            As instituições são gerenciadas via API. Atualmente existem {institutions.length} instituições cadastradas.
           </p>
           <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
             {institutions.map((inst: any) => (
-              <div key={inst.id} className="border rounded p-2 text-center">
+              <div key={inst.id} className="border rounded p-2 text-center hover:shadow-md transition-shadow">
                 <img src={inst.logo} alt={inst.name} className="h-10 mx-auto object-contain" />
                 <p className="text-xs mt-1 truncate">{inst.name}</p>
               </div>
@@ -729,29 +753,12 @@ export default function AdminHomePage() {
             <TabsTrigger value="ecossistema">Ecossistema</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="banners" className="mt-6">
-            <BannerSection />
-          </TabsContent>
-
-          <TabsContent value="selos" className="mt-6">
-            <SelosSection />
-          </TabsContent>
-
-          <TabsContent value="imprensa" className="mt-6">
-            <ImprensaSection />
-          </TabsContent>
-
-          <TabsContent value="diferenciais" className="mt-6">
-            <DiferenciaisSection />
-          </TabsContent>
-
-          <TabsContent value="plataforma" className="mt-6">
-            <PlataformaSection />
-          </TabsContent>
-
-          <TabsContent value="ecossistema" className="mt-6">
-            <EcossistemaSection />
-          </TabsContent>
+          <TabsContent value="banners" className="mt-6"><BannerSection /></TabsContent>
+          <TabsContent value="selos" className="mt-6"><SelosSection /></TabsContent>
+          <TabsContent value="imprensa" className="mt-6"><ImprensaSection /></TabsContent>
+          <TabsContent value="diferenciais" className="mt-6"><DiferenciaisSection /></TabsContent>
+          <TabsContent value="plataforma" className="mt-6"><PlataformaSection /></TabsContent>
+          <TabsContent value="ecossistema" className="mt-6"><EcossistemaSection /></TabsContent>
         </Tabs>
       </div>
     </AdminLayout>

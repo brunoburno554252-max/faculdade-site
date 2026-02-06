@@ -298,4 +298,122 @@ export const homeRouters = router({
 
       return { success: true };
     }),
+
+  // ========== DIFERENCIAIS ==========
+  getDiferenciais: publicProcedure
+    .query(async () => {
+      const pool = await getDbPool();
+      const [rows] = await pool.query(
+        "SELECT * FROM home_diferenciais WHERE active = TRUE ORDER BY sort_order"
+      );
+      return rows;
+    }),
+
+  addDiferencial: publicProcedure
+    .input(z.object({
+      title: z.string(),
+      description: z.string().optional(),
+      icon: z.string().optional(),
+      sortOrder: z.number().optional()
+    }))
+    .mutation(async ({ input }) => {
+      const pool = await getDbPool();
+      await pool.query(
+        "INSERT INTO home_diferenciais (title, description, icon, sort_order) VALUES (?, ?, ?, ?)",
+        [input.title, input.description || '', input.icon || 'DollarSign', input.sortOrder || 0]
+      );
+      return { success: true };
+    }),
+
+  updateDiferencial: publicProcedure
+    .input(z.object({
+      id: z.number(),
+      title: z.string().optional(),
+      description: z.string().optional(),
+      icon: z.string().optional(),
+      sortOrder: z.number().optional(),
+      active: z.boolean().optional()
+    }))
+    .mutation(async ({ input }) => {
+      const pool = await getDbPool();
+      await pool.query(
+        `UPDATE home_diferenciais 
+         SET title = COALESCE(?, title),
+             description = COALESCE(?, description),
+             icon = COALESCE(?, icon),
+             sort_order = COALESCE(?, sort_order),
+             active = COALESCE(?, active),
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?`,
+        [input.title, input.description, input.icon, input.sortOrder, input.active, input.id]
+      );
+      return { success: true };
+    }),
+
+  deleteDiferencial: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const pool = await getDbPool();
+      await pool.query("DELETE FROM home_diferenciais WHERE id = ?", [input.id]);
+      return { success: true };
+    }),
+
+  // ========== PLATFORM FEATURES ==========
+  getPlatformFeatures: publicProcedure
+    .query(async () => {
+      const pool = await getDbPool();
+      const [rows] = await pool.query(
+        "SELECT * FROM home_platform_features WHERE active = TRUE ORDER BY sort_order"
+      );
+      return rows;
+    }),
+
+  addPlatformFeature: publicProcedure
+    .input(z.object({
+      title: z.string(),
+      description: z.string().optional(),
+      icon: z.string().optional(),
+      sortOrder: z.number().optional()
+    }))
+    .mutation(async ({ input }) => {
+      const pool = await getDbPool();
+      await pool.query(
+        "INSERT INTO home_platform_features (title, description, icon, sort_order) VALUES (?, ?, ?, ?)",
+        [input.title, input.description || '', input.icon || 'Check', input.sortOrder || 0]
+      );
+      return { success: true };
+    }),
+
+  updatePlatformFeature: publicProcedure
+    .input(z.object({
+      id: z.number(),
+      title: z.string().optional(),
+      description: z.string().optional(),
+      icon: z.string().optional(),
+      sortOrder: z.number().optional(),
+      active: z.boolean().optional()
+    }))
+    .mutation(async ({ input }) => {
+      const pool = await getDbPool();
+      await pool.query(
+        `UPDATE home_platform_features 
+         SET title = COALESCE(?, title),
+             description = COALESCE(?, description),
+             icon = COALESCE(?, icon),
+             sort_order = COALESCE(?, sort_order),
+             active = COALESCE(?, active),
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?`,
+        [input.title, input.description, input.icon, input.sortOrder, input.active, input.id]
+      );
+      return { success: true };
+    }),
+
+  deletePlatformFeature: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const pool = await getDbPool();
+      await pool.query("DELETE FROM home_platform_features WHERE id = ?", [input.id]);
+      return { success: true };
+    }),
 });
