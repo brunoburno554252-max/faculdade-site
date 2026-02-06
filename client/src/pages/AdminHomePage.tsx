@@ -560,6 +560,111 @@ function PlataformaSection() {
     if (editingId) { updateMutation.mutate({ id: editingId, title, description, icon }); }
     else { const maxOrder = Math.max(...features.map((f: any) => f.sort_order || 0), 0); addMutation.mutate({ title, description, icon, sortOrder: maxOrder + 1 }); }
   };
+
+  const handleSaveTexts = () => {
+    updateSettingsMutation.mutate({
+      section: "platform",
+      fields: [
+        { key: "platform_title", value: platformTitle },
+        { key: "platform_subtitle", value: platformSubtitle },
+        { key: "platform_description", value: platformDescription },
+        { key: "platform_image", value: platformImage },
+      ],
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-xl font-semibold">Seção Plataforma Intuitiva</h2>
+      
+      <Card>
+        <CardHeader><CardTitle>Textos Principais</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div><Label>Título</Label><Input value={platformTitle} onChange={(e) => setPlatformTitle(e.target.value)} placeholder="Plataforma Intuitiva" /></div>
+              <div><Label>Subtítulo</Label><Input value={platformSubtitle} onChange={(e) => setPlatformSubtitle(e.target.value)} placeholder="Experiência do Aluno" /></div>
+              <div><Label>Descrição</Label><Textarea value={platformDescription} onChange={(e) => setPlatformDescription(e.target.value)} rows={4} placeholder="Descrição da plataforma..." /></div>
+            </div>
+            <div><Label>Imagem da Plataforma</Label><ImageUpload value={platformImage} onChange={setPlatformImage} onRemove={() => setPlatformImage("")} aspectRatio={16/9} /></div>
+          </div>
+          <Button onClick={handleSaveTexts} disabled={updateSettingsMutation.isPending}><Save className="w-4 h-4 mr-2" /> Salvar Textos</Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Features da Plataforma</CardTitle>
+          <Button onClick={() => { resetForm(); setShowForm(true); }} size="sm" className="gap-2"><Plus className="w-4 h-4" /> Nova Feature</Button>
+        </CardHeader>
+        <CardContent>
+          {showForm && (
+            <Card className="border-primary mb-4">
+              <CardContent className="pt-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div><Label>Título *</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Acesso 24h" /></div>
+                    <div><Label>Descrição</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} placeholder="Descrição da feature..." /></div>
+                    <div>
+                      <Label>Ícone</Label>
+                      <Select value={icon} onValueChange={setIcon}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {iconOptions.map((opt) => {
+                            const IconComp = iconMap[opt.value];
+                            return (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                <div className="flex items-center gap-2"><IconComp className="w-4 h-4" />{opt.label}</div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit"><Save className="w-4 h-4 mr-2" /> {editingId ? "Atualizar" : "Adicionar"}</Button>
+                    <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid gap-3">
+            {features.map((item: any) => {
+              const IconComp = iconMap[item.icon] || Check;
+              return (
+                <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg bg-white">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                    <IconComp className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p className="text-sm text-gray-500 line-clamp-1">{item.description}</p>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="sm" onClick={() => handleEdit(item)}><Pencil className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="sm" className="text-red-600" onClick={() => setDeleteId(item.id)}><Trash2 className="w-4 h-4" /></Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      <DeleteConfirmDialog
+        open={deleteId !== null}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => deleteId && deleteMutation.mutate({ id: deleteId })}
+        title="Excluir Feature"
+        description="Tem certeza que deseja excluir esta feature da plataforma?"
+      />
+    </div>
+  );
+}
+
 function EcossistemaSection() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
