@@ -346,6 +346,7 @@ function ImprensaSection() {
 }
 
 // ============ DIFERENCIAIS SECTION ============
+function DiferenciaisSection() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [showForm, setShowForm] = useState(false);
