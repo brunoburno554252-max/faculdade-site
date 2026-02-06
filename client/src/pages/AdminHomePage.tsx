@@ -355,7 +355,7 @@ function DiferenciaisSection() {
   const [icon, setIcon] = useState("DollarSign");
 
   // Textos da seção
-  const { data: settings = [], refetch: refetchSettings } = trpc.home.getHomeSettings.useQuery();
+  const { data: settings = [], refetch: refetchSettings } = trpc.home.getHomeSection.useQuery({ section: "about" });
   const { data: diferenciais = [], refetch } = trpc.home.getDiferenciais.useQuery();
   
   const updateSettingsMutation = trpc.home.updateHomeSection.useMutation({
@@ -385,10 +385,10 @@ function DiferenciaisSection() {
   const [aboutImage, setAboutImage] = useState("");
 
   useEffect(() => {
-    setAboutTitle(getValue("about_title") || "Empresários Educacionais:");
-    setAboutSubtitle(getValue("about_subtitle") || "transformem propósito em rentabilidade real");
-    setAboutDescription(getValue("about_description") || "Ser parceiro da LA Educação é sair do jogo pequeno.");
-    setAboutImage(getValue("about_image") || "");
+    setAboutTitle(getValue("title") || "Empresários Educacionais:");
+    setAboutSubtitle(getValue("subtitle") || "transformem propósito em rentabilidade real");
+    setAboutDescription(getValue("description") || "Ser parceiro da LA Educação é sair do jogo pequeno.");
+    setAboutImage(getValue("image_url") || "");
   }, [settings]);
 
   const resetForm = () => { setEditingId(null); setShowForm(false); setTitle(""); setDescription(""); setIcon("DollarSign"); };
@@ -408,10 +408,10 @@ function DiferenciaisSection() {
     updateSettingsMutation.mutate({
       section: "about",
       fields: [
-        { key: "about_title", value: aboutTitle },
-        { key: "about_subtitle", value: aboutSubtitle },
-        { key: "about_description", value: aboutDescription },
-        { key: "about_image", value: aboutImage },
+        { key: "title", value: aboutTitle },
+        { key: "subtitle", value: aboutSubtitle },
+        { key: "description", value: aboutDescription },
+        { key: "image_url", value: aboutImage },
       ],
     });
   };
@@ -513,7 +513,7 @@ function PlataformaSection() {
   const [description, setDescription] = useState("");
   const [icon, setIcon] = useState("Check");
 
-  const { data: settings = [], refetch: refetchSettings } = trpc.home.getHomeSettings.useQuery();
+  const { data: settings = [], refetch: refetchSettings } = trpc.home.getHomeSection.useQuery({ section: "student_experience" });
   const { data: features = [], refetch } = trpc.home.getPlatformFeatures.useQuery();
   
   const updateSettingsMutation = trpc.home.updateHomeSection.useMutation({
@@ -543,10 +543,10 @@ function PlataformaSection() {
   const [platformImage, setPlatformImage] = useState("");
 
   useEffect(() => {
-    setPlatformTitle(getValue("platform_title") || "Plataforma Intuitiva");
-    setPlatformSubtitle(getValue("platform_subtitle") || "Experiência do Aluno");
-    setPlatformDescription(getValue("platform_description") || "");
-    setPlatformImage(getValue("platform_image") || "");
+    setPlatformTitle(getValue("title") || "Plataforma Intuitiva");
+    setPlatformSubtitle(getValue("label") || "Experiência do Aluno");
+    setPlatformDescription(getValue("description") || "");
+    setPlatformImage(getValue("image_url") || "");
   }, [settings]);
 
   const resetForm = () => { setEditingId(null); setShowForm(false); setTitle(""); setDescription(""); setIcon("Check"); };
@@ -679,7 +679,7 @@ function EcossistemaSection() {
   const [tipo, setTipo] = useState("");
   const [categoria, setCategoria] = useState("");
 
-  const { data: settings = [], refetch: refetchSettings } = trpc.home.getHomeSettings.useQuery();
+  const { data: settings = [], refetch: refetchSettings } = trpc.home.getHomeSection.useQuery({ section: "ecosystem" });
   const { data: institutions = [], refetch, isLoading } = trpc.home.getEcosystemInstitutions.useQuery();
   
   const updateSettingsMutation = trpc.home.updateHomeSection.useMutation({
@@ -708,18 +708,18 @@ function EcossistemaSection() {
   const [ecoDescription, setEcoDescription] = useState("");
 
   useEffect(() => {
-    setEcoTitle(getValue("ecosystem_title") || "Por que somos o maior");
-    setEcoSubtitle(getValue("ecosystem_subtitle") || "Ecossistema Educacional");
-    setEcoDescription(getValue("ecosystem_description") || "À disposição de nossos parceiros e alunos...");
+    setEcoTitle(getValue("title") || "Por que somos o maior");
+    setEcoSubtitle(getValue("subtitle") || "Ecossistema Educacional");
+    setEcoDescription(getValue("description") || "À disposição de nossos parceiros e alunos...");
   }, [settings]);
 
   const handleSaveTexts = () => {
     updateSettingsMutation.mutate({
       section: "ecosystem",
       fields: [
-        { key: "ecosystem_title", value: ecoTitle },
-        { key: "ecosystem_subtitle", value: ecoSubtitle },
-        { key: "ecosystem_description", value: ecoDescription },
+        { key: "title", value: ecoTitle },
+        { key: "subtitle", value: ecoSubtitle },
+        { key: "description", value: ecoDescription },
       ],
     });
   };

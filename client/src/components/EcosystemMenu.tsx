@@ -46,6 +46,7 @@ interface MenuItem {
   logo: string;
   banner: string;
   description: string;
+  website: string;
 }
 
 export default function EcosystemMenu() {
@@ -80,7 +81,8 @@ export default function EcosystemMenu() {
       name: data?.nome || item.id.toUpperCase(),
       logo: data?.fotos?.[0] || logoFallbacks[item.key],
       banner: data?.banner || bannerFallbacks[item.key],
-      description: data?.descricao || "Descrição em breve."
+      description: data?.descricao || "Descrição em breve.",
+      website: data?.website || ""
     };
   });
 
@@ -194,7 +196,22 @@ export default function EcosystemMenu() {
                 {activeTab.description}
               </p>
             </div>
-            <div className="mt-14 flex justify-center">
+            {activeTab.website && (
+              <div className="mt-10">
+                <a 
+                  href={activeTab.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-4 rounded-full shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105"
+                >
+                  Conhecer mais
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </a>
+              </div>
+            )}
+            <div className="mt-10 flex justify-center">
               <div className="h-2.5 w-32 bg-primary rounded-full shadow-xl shadow-primary/30"></div>
             </div>
           </div>
