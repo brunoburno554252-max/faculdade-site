@@ -1,25 +1,8 @@
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { BookOpen, Monitor, Briefcase, ArrowRight, GraduationCap } from "lucide-react";
 import { Link } from "wouter";
-import { courses } from "../data/courses";
-
-// Helper function to count courses by category
-const getCourseCount = (categoryType: string) => {
-  // Mapping categories to course types/modalities
-  if (categoryType === "Graduação EAD") {
-    return courses.filter(c => (c.type === "Bacharelado" || c.type === "Licenciatura") && c.modality === "EAD").length;
-  }
-  if (categoryType === "Pós-Graduação") {
-    return courses.filter(c => c.type === "Pós-Graduação").length;
-  }
-  if (categoryType === "Cursos Técnicos") {
-    return courses.filter(c => c.type === "Tecnólogo").length;
-  }
-  if (categoryType === "Profissionalizantes") {
-    return courses.filter(c => c.type === "Cursos Livres").length;
-  }
-  return 0;
-};
+import { Button } from "@/components/ui/button";
+import { trpc } from "@/lib/trpc";
 
 const categories = [
   {
@@ -29,7 +12,8 @@ const categories = [
     icon: <GraduationCap size={32} className="text-white" />,
     color: "bg-purple-600",
     image: "/images/course-law.jpg",
-    link: "/cursos?categoria=graduacao-ead"
+    link: "/cursos?categoria=graduacao-ead",
+    types: ["Bacharelado", "Licenciatura"]
   },
   {
     id: 2,
@@ -38,7 +22,8 @@ const categories = [
     icon: <BookOpen size={32} className="text-white" />,
     color: "bg-pink-600",
     image: "/images/course-health.jpg",
-    link: "/cursos?categoria=pos-graduacao"
+    link: "/cursos?categoria=pos-graduacao",
+    types: ["Pós-Graduação"]
   },
   {
     id: 3,
@@ -47,7 +32,8 @@ const categories = [
     icon: <Monitor size={32} className="text-white" />,
     color: "bg-blue-600",
     image: "/images/course-engineering.jpg",
-    link: "/cursos?categoria=cursos-tecnicos"
+    link: "/cursos?categoria=cursos-tecnicos",
+    types: ["Tecnólogo"]
   },
   {
     id: 4,
@@ -56,12 +42,32 @@ const categories = [
     icon: <Briefcase size={32} className="text-white" />,
     color: "bg-orange-500",
     image: "/images/hero-students.jpg",
-    link: "/cursos?categoria=profissionalizantes"
+    link: "/cursos?categoria=profissionalizantes",
+    types: ["Cursos Livres"]
   }
 ];
 
 export default function CourseList() {
-  const totalCourses = courses.length;
+  const { data: coursesData = [], isLoading } = trpc.courses.getAll.useQuery();
+
+  // Helper function to count courses by category
+  const getCourseCount = (categoryTypes: string[]) => {
+    return coursesData.filter((c: any) => categoryTypes.includes(c.type)).length;
+  };
+
+  const totalCourses = coursesData.length;
+
+  if (isLoading) {
+    return (
+      <section className="py-24 bg-background relative overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-24 bg-background relative overflow-hidden">
@@ -101,7 +107,7 @@ export default function CourseList() {
                   </div>
                   <div className="absolute bottom-4 left-4 z-20">
                     <span className="text-white/90 text-sm font-bold bg-white/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-                      {getCourseCount(category.title)} Cursos
+                      {getCourseCount(category.types)} Cursos
                     </span>
                   </div>
                 </div>

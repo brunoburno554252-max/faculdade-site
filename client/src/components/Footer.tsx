@@ -31,8 +31,7 @@ export default function Footer() {
 
   const phone = settings.phone || "(44) 9944-9323";
   const email = settings.email || "contato@laeducacao.com.br";
-  // Alterado para Sede Administrativa - Maringá/PR conforme solicitado
-  const address = "Sede Administrativa - Maringá/PR";
+  const address = settings.address || "Sede Administrativa - Maringá/PR";
   const facebook = settings.facebook || "https://www.facebook.com/laeducacao.oficial/";
   const instagram = settings.instagram || "https://www.instagram.com/laeducacao.oficial/";
   const youtube = settings.youtube || "https://www.youtube.com/channel/UCwNlniwYjILixId5t7bii7g";
