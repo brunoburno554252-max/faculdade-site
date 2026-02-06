@@ -404,7 +404,7 @@ function DiferenciaisSection() {
     else { const maxOrder = Math.max(...diferenciais.map((d: any) => d.sort_order || 0), 0); addMutation.mutate({ title, description, icon, sortOrder: maxOrder + 1 }); }
   };
 
-  const handleSaveTexts = () => {
+  const handleSaveTexts = () => { console.log("handleSaveTexts chamado!");
     updateSettingsMutation.mutate({
       section: "about",
       fields: [
@@ -562,7 +562,7 @@ function PlataformaSection() {
     else { const maxOrder = Math.max(...features.map((f: any) => f.sort_order || 0), 0); addMutation.mutate({ title, description, icon, sortOrder: maxOrder + 1 }); }
   };
 
-  const handleSaveTexts = () => {
+  const handleSaveTexts = () => { console.log("handleSaveTexts chamado!");
     updateSettingsMutation.mutate({
       section: "student_experience",
       fields: [
@@ -713,7 +713,7 @@ function EcossistemaSection() {
     setEcoDescription(getValue("description") || "À disposição de nossos parceiros e alunos...");
   }, [settings]);
 
-  const handleSaveTexts = () => {
+  const handleSaveTexts = () => { console.log("handleSaveTexts chamado!");
     updateSettingsMutation.mutate({
       section: "ecosystem",
       fields: [
