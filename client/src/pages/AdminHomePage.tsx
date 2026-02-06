@@ -1,397 +1,424 @@
 import { useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
-import { Save, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Trash2, Save } from "lucide-react";
+import { toast } from "sonner";
 
 export default function AdminHomePage() {
-  const { data: homeSettings = [], refetch } = trpc.home.getHomeSettings.useQuery();
-  const updateMutation = trpc.home.updateHomeSection.useMutation({
-    onSuccess: () => {
-      toast.success("Configurações atualizadas com sucesso!");
-      refetch();
-    },
-    onError: (error: any) => {
-      toast.error(`Erro ao atualizar: ${error.message}`);
-    },
-  });
+  const [activeTab, setActiveTab] = useState("header");
 
-  // Função auxiliar para pegar valor de um campo
-  const getFieldValue = (section: string, field: string) => {
-    const item = (homeSettings as any[]).find(
-      (s: any) => s.section === section && s.field === field
-    );
-    return item?.value || "";
+  // Queries
+  const { data: headerData = [], refetch: refetchHeader } = trpc.home.getHeader.useQuery();
+  const { data: certifications = [], refetch: refetchCerts } = trpc.home.getCertifications.useQuery();
+  const { data: press = [], refetch: refetchPress } = trpc.home.getPress.useQuery();
+  const { data: aboutSettings = [], refetch: refetchAbout } = trpc.home.getHomeSection.useQuery({ section: "about" });
+  const { data: studentSettings = [], refetch: refetchStudent } = trpc.home.getHomeSection.useQuery({ section: "student_experience" });
+  const { data: ecosystemSettings = [], refetch: refetchEcosystem } = trpc.home.getHomeSection.useQuery({ section: "ecosystem" });
+
+  // Mutations
+  const updateHeader = trpc.home.updateHeader.useMutation();
+  const updateHomeField = trpc.home.updateHomeField.useMutation();
+  const addCert = trpc.home.addCertification.useMutation();
+  const deleteCert = trpc.home.deleteCertification.useMutation();
+  const addPressItem = trpc.home.addPress.useMutation();
+  const deletePressItem = trpc.home.deletePress.useMutation();
+
+  // Helper para pegar valor de campo
+  const getFieldValue = (data: any[], field: string, defaultValue: string = "") => {
+    const item = data.find((s: any) => s.field === field);
+    return item?.value || defaultValue;
   };
 
-  // Hero Section
-  const [heroTitle, setHeroTitle] = useState("");
-  const [heroSubtitle, setHeroSubtitle] = useState("");
-  const [heroCtaText, setHeroCtaText] = useState("");
-  const [heroCtaLink, setHeroCtaLink] = useState("");
-
-  // About Section
-  const [aboutTitle, setAboutTitle] = useState("");
-  const [aboutSubtitle, setAboutSubtitle] = useState("");
-  const [aboutDescription, setAboutDescription] = useState("");
-  const [aboutSectionTitle, setAboutSectionTitle] = useState("");
-
-  // Student Experience
-  const [studentLabel, setStudentLabel] = useState("");
-  const [studentTitle, setStudentTitle] = useState("");
-  const [studentDescription, setStudentDescription] = useState("");
-
-  // Ecosystem
-  const [ecosystemTitle, setEcosystemTitle] = useState("");
-  const [ecosystemDescription, setEcosystemDescription] = useState("");
-
-  // Carregar dados quando disponíveis
-  useState(() => {
-    if (homeSettings.length > 0) {
-      // Hero
-      setHeroTitle(getFieldValue("hero", "title"));
-      setHeroSubtitle(getFieldValue("hero", "subtitle"));
-      setHeroCtaText(getFieldValue("hero", "cta_text"));
-      setHeroCtaLink(getFieldValue("hero", "cta_link"));
-
-      // About
-      setAboutTitle(getFieldValue("about", "title"));
-      setAboutSubtitle(getFieldValue("about", "subtitle"));
-      setAboutDescription(getFieldValue("about", "description"));
-      setAboutSectionTitle(getFieldValue("about", "section_title"));
-
-      // Student Experience
-      setStudentLabel(getFieldValue("student_experience", "label"));
-      setStudentTitle(getFieldValue("student_experience", "title"));
-      setStudentDescription(getFieldValue("student_experience", "description"));
-
-      // Ecosystem
-      setEcosystemTitle(getFieldValue("ecosystem", "title"));
-      setEcosystemDescription(getFieldValue("ecosystem", "description"));
+  // Handler para salvar header
+  const handleSaveHeader = async (field: string, value: string) => {
+    try {
+      await updateHeader.mutateAsync({ field, value });
+      toast.success("Header atualizado!");
+      refetchHeader();
+    } catch (error) {
+      toast.error("Erro ao atualizar header");
     }
-  });
-
-  const handleSaveHero = () => {
-    updateMutation.mutate({
-      section: "hero",
-      fields: [
-        { field: "title", value: heroTitle, sortOrder: 0 },
-        { field: "subtitle", value: heroSubtitle, sortOrder: 1 },
-        { field: "cta_text", value: heroCtaText, sortOrder: 2 },
-        { field: "cta_link", value: heroCtaLink, sortOrder: 3 },
-      ],
-    });
   };
 
-  const handleSaveAbout = () => {
-    updateMutation.mutate({
-      section: "about",
-      fields: [
-        { field: "title", value: aboutTitle, sortOrder: 0 },
-        { field: "subtitle", value: aboutSubtitle, sortOrder: 1 },
-        { field: "description", value: aboutDescription, sortOrder: 2 },
-        { field: "section_title", value: aboutSectionTitle, sortOrder: 3 },
-      ],
-    });
+  // Handler para salvar campo de seção
+  const handleSaveField = async (section: string, field: string, value: string, refetch: any) => {
+    try {
+      await updateHomeField.mutateAsync({ section, field, value });
+      toast.success("Campo atualizado!");
+      refetch();
+    } catch (error) {
+      toast.error("Erro ao atualizar campo");
+    }
   };
 
-  const handleSaveStudentExperience = () => {
-    updateMutation.mutate({
-      section: "student_experience",
-      fields: [
-        { field: "label", value: studentLabel, sortOrder: 0 },
-        { field: "title", value: studentTitle, sortOrder: 1 },
-        { field: "description", value: studentDescription, sortOrder: 2 },
-      ],
-    });
+  // Handler para adicionar selo
+  const handleAddCert = async () => {
+    const name = prompt("Nome do selo:");
+    const imageUrl = prompt("URL da imagem:");
+    if (name && imageUrl) {
+      try {
+        await addCert.mutateAsync({ name, imageUrl });
+        toast.success("Selo adicionado!");
+        refetchCerts();
+      } catch (error) {
+        toast.error("Erro ao adicionar selo");
+      }
+    }
   };
 
-  const handleSaveEcosystem = () => {
-    updateMutation.mutate({
-      section: "ecosystem",
-      fields: [
-        { field: "title", value: ecosystemTitle, sortOrder: 0 },
-        { field: "description", value: ecosystemDescription, sortOrder: 1 },
-      ],
-    });
+  // Handler para remover selo
+  const handleDeleteCert = async (id: number) => {
+    if (confirm("Deseja remover este selo?")) {
+      try {
+        await deleteCert.mutateAsync({ id });
+        toast.success("Selo removido!");
+        refetchCerts();
+      } catch (error) {
+        toast.error("Erro ao remover selo");
+      }
+    }
   };
 
-  const isLoading = updateMutation.isPending;
+  // Handler para adicionar imprensa
+  const handleAddPress = async () => {
+    const name = prompt("Nome da mídia:");
+    const imageUrl = prompt("URL da imagem:");
+    if (name && imageUrl) {
+      try {
+        await addPressItem.mutateAsync({ name, imageUrl });
+        toast.success("Mídia adicionada!");
+        refetchPress();
+      } catch (error) {
+        toast.error("Erro ao adicionar mídia");
+      }
+    }
+  };
+
+  // Handler para remover imprensa
+  const handleDeletePress = async (id: number) => {
+    if (confirm("Deseja remover esta mídia?")) {
+      try {
+        await deletePressItem.mutateAsync({ id });
+        toast.success("Mídia removida!");
+        refetchPress();
+      } catch (error) {
+        toast.error("Erro ao remover mídia");
+      }
+    }
+  };
 
   return (
     <AdminLayout>
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Edição da Home</h1>
-            <p className="text-gray-600 mt-2">
-              Configure todos os elementos da página inicial
-            </p>
-          </div>
+      <div className="p-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Edição da Home</h1>
+          <p className="text-gray-600 mt-2">Gerencie todos os blocos da página inicial</p>
         </div>
 
-        <Tabs defaultValue="hero" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+            <TabsTrigger value="header">Header</TabsTrigger>
             <TabsTrigger value="hero">Hero</TabsTrigger>
-            <TabsTrigger value="about">Diferenciais</TabsTrigger>
-            <TabsTrigger value="student">Plataforma</TabsTrigger>
-            <TabsTrigger value="ecosystem">Ecossistema</TabsTrigger>
+            <TabsTrigger value="selos">Selos</TabsTrigger>
+            <TabsTrigger value="imprensa">Imprensa</TabsTrigger>
+            <TabsTrigger value="empresarios">Empresários</TabsTrigger>
+            <TabsTrigger value="plataforma">Plataforma</TabsTrigger>
+            <TabsTrigger value="ecossistema">Ecossistema</TabsTrigger>
+            <TabsTrigger value="cursos">Cursos</TabsTrigger>
           </TabsList>
 
-          {/* Hero Section */}
+          {/* HEADER */}
+          <TabsContent value="header">
+            <Card>
+              <CardHeader>
+                <CardTitle>Configurações do Header</CardTitle>
+                <CardDescription>Edite telefone, localização e logo</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Telefone</label>
+                  <div className="flex gap-2">
+                    <Input
+                      defaultValue={getFieldValue(headerData, "phone", "(44) 9944-9323")}
+                      id="phone"
+                    />
+                    <Button onClick={() => {
+                      const value = (document.getElementById("phone") as HTMLInputElement).value;
+                      handleSaveHeader("phone", value);
+                    }}>
+                      <Save className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Localização</label>
+                  <div className="flex gap-2">
+                    <Input
+                      defaultValue={getFieldValue(headerData, "location", "Maringá - PR")}
+                      id="location"
+                    />
+                    <Button onClick={() => {
+                      const value = (document.getElementById("location") as HTMLInputElement).value;
+                      handleSaveHeader("location", value);
+                    }}>
+                      <Save className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* HERO */}
           <TabsContent value="hero">
             <Card>
               <CardHeader>
-                <CardTitle>Banner Principal (Hero)</CardTitle>
+                <CardTitle>Banners Hero</CardTitle>
+                <CardDescription>Os banners são gerenciados na seção "Banners" do menu</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="hero-title">Título</Label>
-                  <Input
-                    id="hero-title"
-                    value={heroTitle}
-                    onChange={(e) => setHeroTitle(e.target.value)}
-                    placeholder="Cresça no mercado educacional"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="hero-subtitle">Subtítulo</Label>
-                  <Input
-                    id="hero-subtitle"
-                    value={heroSubtitle}
-                    onChange={(e) => setHeroSubtitle(e.target.value)}
-                    placeholder="com segurança, escala e a maior lucratividade do setor!"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="hero-cta-text">Texto do Botão</Label>
-                  <Input
-                    id="hero-cta-text"
-                    value={heroCtaText}
-                    onChange={(e) => setHeroCtaText(e.target.value)}
-                    placeholder="Quero ser Parceiro"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="hero-cta-link">Link do Botão</Label>
-                  <Input
-                    id="hero-cta-link"
-                    value={heroCtaLink}
-                    onChange={(e) => setHeroCtaLink(e.target.value)}
-                    placeholder="/seja-um-parceiro"
-                  />
-                </div>
-
-                <Button
-                  onClick={handleSaveHero}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Salvando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Salvar Hero
-                    </>
-                  )}
+              <CardContent>
+                <Button onClick={() => window.location.href = "/admin-la-educacao/banners"}>
+                  Ir para Gerenciamento de Banners
                 </Button>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* About Section */}
-          <TabsContent value="about">
+          {/* SELOS */}
+          <TabsContent value="selos">
             <Card>
               <CardHeader>
-                <CardTitle>Seção de Diferenciais</CardTitle>
+                <CardTitle>Selos de Qualidade</CardTitle>
+                <CardDescription>Adicione ou remova selos de certificação</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={handleAddCert} className="mb-4">
+                  <Plus className="w-4 h-4 mr-2" /> Adicionar Selo
+                </Button>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {certifications.map((cert: any) => (
+                    <div key={cert.id} className="border rounded-lg p-4 flex flex-col items-center">
+                      <img src={cert.image_url} alt={cert.name} className="h-20 object-contain mb-2" />
+                      <p className="text-sm font-medium text-center">{cert.name}</p>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => handleDeleteCert(cert.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* IMPRENSA */}
+          <TabsContent value="imprensa">
+            <Card>
+              <CardHeader>
+                <CardTitle>Imprensa</CardTitle>
+                <CardDescription>Adicione ou remova logos de mídia</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={handleAddPress} className="mb-4">
+                  <Plus className="w-4 h-4 mr-2" /> Adicionar Mídia
+                </Button>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {press.map((item: any) => (
+                    <div key={item.id} className="border rounded-lg p-4 flex flex-col items-center">
+                      <img src={item.image_url} alt={item.name} className="h-20 object-contain mb-2" />
+                      <p className="text-sm font-medium text-center">{item.name}</p>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => handleDeletePress(item.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* EMPRESÁRIOS */}
+          <TabsContent value="empresarios">
+            <Card>
+              <CardHeader>
+                <CardTitle>Seção Empresários Educacionais</CardTitle>
+                <CardDescription>Edite textos da seção de diferenciais</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="about-title">Título Principal</Label>
+                  <label className="block text-sm font-medium mb-2">Título</label>
                   <Textarea
+                    defaultValue={getFieldValue(aboutSettings, "title", "Empresários Educacionais: transformem propósito em rentabilidade real")}
                     id="about-title"
-                    value={aboutTitle}
-                    onChange={(e) => setAboutTitle(e.target.value)}
-                    placeholder="Empresários Educacionais: transformem propósito em rentabilidade real..."
                     rows={3}
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="about-subtitle">Subtítulo</Label>
-                  <Input
+                  <label className="block text-sm font-medium mb-2">Subtítulo</label>
+                  <Textarea
+                    defaultValue={getFieldValue(aboutSettings, "subtitle", "Ser parceiro da LA Educação é sair do jogo pequeno.")}
                     id="about-subtitle"
-                    value={aboutSubtitle}
-                    onChange={(e) => setAboutSubtitle(e.target.value)}
-                    placeholder="Ser parceiro da LA Educação é sair do jogo pequeno."
+                    rows={2}
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="about-description">Descrição</Label>
+                  <label className="block text-sm font-medium mb-2">Descrição</label>
                   <Textarea
+                    defaultValue={getFieldValue(aboutSettings, "description", "Enquanto o mercado paga 30%, aqui você constrói autoridade...")}
                     id="about-description"
-                    value={aboutDescription}
-                    onChange={(e) => setAboutDescription(e.target.value)}
-                    placeholder="Enquanto o mercado paga 30%..."
                     rows={3}
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="about-section-title">Título da Seção de Diferenciais</Label>
-                  <Input
-                    id="about-section-title"
-                    value={aboutSectionTitle}
-                    onChange={(e) => setAboutSectionTitle(e.target.value)}
-                    placeholder="Conheça agora os diferenciais de Ser LA:"
-                  />
-                </div>
-
-                <Button
-                  onClick={handleSaveAbout}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Salvando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Salvar Diferenciais
-                    </>
-                  )}
+                <Button onClick={() => {
+                  const title = (document.getElementById("about-title") as HTMLTextAreaElement).value;
+                  const subtitle = (document.getElementById("about-subtitle") as HTMLTextAreaElement).value;
+                  const description = (document.getElementById("about-description") as HTMLTextAreaElement).value;
+                  
+                  Promise.all([
+                    handleSaveField("about", "title", title, refetchAbout),
+                    handleSaveField("about", "subtitle", subtitle, refetchAbout),
+                    handleSaveField("about", "description", description, refetchAbout),
+                  ]);
+                }}>
+                  Salvar Alterações
                 </Button>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Student Experience Section */}
-          <TabsContent value="student">
+          {/* PLATAFORMA */}
+          <TabsContent value="plataforma">
             <Card>
               <CardHeader>
-                <CardTitle>Plataforma para Alunos</CardTitle>
+                <CardTitle>Seção Plataforma Intuitiva</CardTitle>
+                <CardDescription>Edite textos da seção de experiência do aluno</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="student-label">Label (Texto Pequeno)</Label>
+                  <label className="block text-sm font-medium mb-2">Label</label>
                   <Input
+                    defaultValue={getFieldValue(studentSettings, "label", "EXPERIÊNCIA DO ALUNO")}
                     id="student-label"
-                    value={studentLabel}
-                    onChange={(e) => setStudentLabel(e.target.value)}
-                    placeholder="EXPERIÊNCIA DO ALUNO"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="student-title">Título</Label>
+                  <label className="block text-sm font-medium mb-2">Título</label>
                   <Input
+                    defaultValue={getFieldValue(studentSettings, "title", "Plataforma intuitiva e repleta de recursos")}
                     id="student-title"
-                    value={studentTitle}
-                    onChange={(e) => setStudentTitle(e.target.value)}
-                    placeholder="Plataforma intuitiva e repleta de recursos"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="student-description">Descrição</Label>
+                  <label className="block text-sm font-medium mb-2">Descrição</label>
                   <Textarea
+                    defaultValue={getFieldValue(studentSettings, "description", "Seus alunos terão acesso a uma plataforma moderna...")}
                     id="student-description"
-                    value={studentDescription}
-                    onChange={(e) => setStudentDescription(e.target.value)}
-                    placeholder="Seus alunos terão acesso a uma plataforma moderna..."
-                    rows={4}
+                    rows={3}
                   />
                 </div>
 
-                <Button
-                  onClick={handleSaveStudentExperience}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Salvando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Salvar Plataforma
-                    </>
-                  )}
+                <Button onClick={() => {
+                  const label = (document.getElementById("student-label") as HTMLInputElement).value;
+                  const title = (document.getElementById("student-title") as HTMLInputElement).value;
+                  const description = (document.getElementById("student-description") as HTMLTextAreaElement).value;
+                  
+                  Promise.all([
+                    handleSaveField("student_experience", "label", label, refetchStudent),
+                    handleSaveField("student_experience", "title", title, refetchStudent),
+                    handleSaveField("student_experience", "description", description, refetchStudent),
+                  ]);
+                }}>
+                  Salvar Alterações
                 </Button>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Ecosystem Section */}
-          <TabsContent value="ecosystem">
+          {/* ECOSSISTEMA */}
+          <TabsContent value="ecossistema">
             <Card>
               <CardHeader>
-                <CardTitle>Ecossistema Educacional</CardTitle>
+                <CardTitle>Seção Ecossistema</CardTitle>
+                <CardDescription>Edite textos da seção de ecossistema</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="ecosystem-title">Título</Label>
+                  <label className="block text-sm font-medium mb-2">Título</label>
                   <Input
+                    defaultValue={getFieldValue(ecosystemSettings, "title", "Por que somos o maior Ecossistema Educacional do Brasil?")}
                     id="ecosystem-title"
-                    value={ecosystemTitle}
-                    onChange={(e) => setEcosystemTitle(e.target.value)}
-                    placeholder="Por que somos o maior Ecossistema Educacional do Brasil?"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="ecosystem-description">Descrição</Label>
+                  <label className="block text-sm font-medium mb-2">Descrição</label>
                   <Textarea
+                    defaultValue={getFieldValue(ecosystemSettings, "description", "À disposição de nossos parceiros e alunos...")}
                     id="ecosystem-description"
-                    value={ecosystemDescription}
-                    onChange={(e) => setEcosystemDescription(e.target.value)}
-                    placeholder="À disposição de nossos parceiros e alunos..."
-                    rows={4}
+                    rows={3}
                   />
                 </div>
 
-                <Button
-                  onClick={handleSaveEcosystem}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Salvando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Salvar Ecossistema
-                    </>
-                  )}
+                <Button onClick={() => {
+                  const title = (document.getElementById("ecosystem-title") as HTMLInputElement).value;
+                  const description = (document.getElementById("ecosystem-description") as HTMLTextAreaElement).value;
+                  
+                  Promise.all([
+                    handleSaveField("ecosystem", "title", title, refetchEcosystem),
+                    handleSaveField("ecosystem", "description", description, refetchEcosystem),
+                  ]);
+                }}>
+                  Salvar Alterações
                 </Button>
 
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-blue-900">
-                    <strong>Nota:</strong> Os logos e links do ecossistema são gerenciados na seção "Ecossistema" do menu lateral.
+                <div className="mt-6 pt-6 border-t">
+                  <p className="text-sm text-gray-600 mb-2">
+                    Para gerenciar as instituições do ecossistema, acesse:
                   </p>
+                  <Button onClick={() => window.location.href = "/admin-la-educacao/ecossistema"}>
+                    Gerenciar Instituições
+                  </Button>
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* CURSOS */}
+          <TabsContent value="cursos">
+            <Card>
+              <CardHeader>
+                <CardTitle>Cursos em Destaque</CardTitle>
+                <CardDescription>Escolha quais cursos aparecem na home (máximo 4)</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600 mb-4">
+                  Funcionalidade em desenvolvimento. Em breve você poderá selecionar os cursos diretamente aqui.
+                </p>
+                <Button onClick={() => window.location.href = "/admin-la-educacao/cursos"}>
+                  Gerenciar Cursos
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>

@@ -1,13 +1,10 @@
-const pressLogos = [
-  { id: 1, name: "CARAS", logo: "/assets/press/logo-caras.png" },
-  { id: 2, name: "ISTOÉ", logo: "/assets/press/logo-istoe.png" },
-  { id: 3, name: "Valor Econômico", logo: "/assets/press/logo-valor-economico.png" },
-  { id: 4, name: "G1", logo: "/assets/press/logo-g1.png" },
-  { id: 5, name: "Empresas & Negócios", logo: "/assets/press/logo-empresas-negocios.png" },
-  { id: 6, name: "O Maringá", logo: "/assets/press/logo-o-maringa.png" },
-];
+import { trpc } from "@/lib/trpc";
 
 export default function PressNews() {
+  const { data: pressLogos = [] } = trpc.home.getPress.useQuery();
+
+  if (pressLogos.length === 0) return null;
+
   return (
     <section className="py-8 bg-white border-b border-gray-50">
       <div className="container mx-auto px-4">
@@ -18,18 +15,20 @@ export default function PressNews() {
         </div>
 
         <div className="flex flex-wrap justify-center items-center gap-10 md:gap-20">
-          {pressLogos.map((logo) => (
-            <div key={logo.id} className="flex items-center justify-center group">
+          {pressLogos.map((logo: any) => (
+            <a
+              key={logo.id}
+              href={logo.link || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center group"
+            >
               <img 
-                src={logo.logo}
+                src={logo.image_url}
                 alt={logo.name}
-                className={`w-auto object-contain transition-all duration-500 cursor-pointer opacity-100 group-hover:scale-110 ${
-                  logo.name === "G1" || logo.name === "O Maringá" 
-                    ? "h-16 md:h-24" 
-                    : "h-12 md:h-16"
-                }`}
+                className="h-12 md:h-16 w-auto object-contain transition-all duration-500 cursor-pointer opacity-100 group-hover:scale-110"
               />
-            </div>
+            </a>
           ))}
         </div>
       </div>
